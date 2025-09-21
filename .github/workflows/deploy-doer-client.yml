@@ -1,0 +1,29 @@
+name: Deploy static site to public repo (minimal)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPO: BaguetteLee/doer-client-site
+  PUBLISH_DIR: .
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出源码仓库（私有）
+        uses: actions/checkout@v4
+
+      - name: 部署到站点仓库（使用 PAT）
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          repository-name: ${{ env.TARGET_REPO }}
+          branch: main
+          folder: ${{ env.PUBLISH_DIR }}
+          token: ${{ secrets.SITE_REPO_TOKEN }}
+          clean: true
