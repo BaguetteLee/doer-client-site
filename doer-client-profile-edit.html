@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">index
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人资料 - 轻松工作</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配 - 与其他页面保持一致
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        /* 使用与其他页面一致的CSS变量 */
+        :root {
+            --primary-color: #ff7e00;
+            --primary-dark: #ff5f00;
+            --background-light: #f8f9fa;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --card-radius: 0.6rem;
+            --button-radius: 0.6rem;
+            --base-spacing: 0.8rem;
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            --button-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem; /* 与其他页面一致的字体大小 */
+            line-height: 1.4;
+            padding-bottom: 3.5rem; /* 为底部导航栏留出空间 */
+        }
+        
+        /* 顶部区域 - 与其他页面保持一致 */
+        .profile-header {
+            padding: 1.2rem var(--base-spacing) 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-bottom-left-radius: var(--card-radius);
+            border-bottom-right-radius: var(--card-radius);
+            box-shadow: var(--button-shadow);
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .profile-top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            justify-content: space-between;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 0.9rem; /* 与其他页面一致的标题大小 */
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+        
+        /* 内容容器 */
+        .container {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--base-spacing);
+            padding-bottom: 2rem; /* 添加一些底部内边距 */
+        }
+        
+        /* 表单区域 - 调整样式与其他页面一致 */
+        .form-section {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: var(--base-spacing);
+            box-shadow: var(--card-shadow);
+            margin-bottom: var(--base-spacing);
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 0.8rem; /* 调整标题大小与其他页面一致 */
+            font-weight: 600;
+            margin-bottom: calc(var(--base-spacing) * 0.8);
+            padding-bottom: calc(var(--base-spacing) * 0.5);
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            color: var(--text-primary);
+        }
+        
+        .section-title i {
+            margin-right: calc(var(--base-spacing) * 0.5);
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: var(--base-spacing);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.75rem; /* 与其他页面表单标签一致 */
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem 0.7rem 2.5rem;
+            border: 0.05rem solid #e0e0e0;
+            border-radius: var(--card-radius);
+            font-size: 0.75rem; /* 与其他页面输入框一致 */
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .form-input.error {
+            border-color: var(--error-color);
+        }
+        
+        .error-message {
+            font-size: 0.65rem; /* 与其他页面错误消息一致 */
+            color: var(--error-color);
+            margin-top: 0.4rem;
+            display: none;
+        }
+        
+        .form-hint {
+            font-size: 0.65rem; /* 与其他页面提示文本一致 */
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+        
+        /* 密码强度指示器 */
+        .password-strength {
+            margin-top: 0.4rem;
+            height: 0.3rem;
+            background: #f0f0f0;
+            border-radius: 0.15rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: var(--transition);
+            border-radius: 0.15rem;
+        }
+        
+        .password-strength-text {
+            font-size: 0.65rem; /* 调整字体大小与其他页面一致 */
+            margin-top: 0.3rem;
+            color: var(--text-muted);
+        }
+        
+        /* 字段修改提示 */
+        .field-changed {
+            display: none;
+            font-size: 0.65rem; /* 调整字体大小与其他页面一致 */
+            color: var(--primary-color);
+            margin-top: 0.3rem;
+        }
+        
+        /* 头像样式 */
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: var(--base-spacing);
+            margin-bottom: calc(var(--base-spacing) * 1.2);
+        }
+        
+        .avatar {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 0.08rem solid #ffecd1;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 0.9rem; /* 调整字体大小与其他页面一致 */
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+        
+        .user-id {
+            font-size: 0.7rem; /* 调整字体大小与其他页面一致 */
+            color: var(--text-muted);
+        }
+        
+        /* 按钮样式 - 与其他页面保持一致 */
+        .btn {
+            border: none;
+            border-radius: var(--button-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            font-size: 0.8rem; /* 与其他页面按钮一致 */
+        }
+        
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: var(--button-shadow);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-0.1rem);
+        }
+        
+        .edit-btn {
+            padding: 0.5rem 0.8rem;
+        }
+        
+        .save-btn {
+            padding: 0.7rem;
+            display: block;
+            margin: 1rem auto 0;
+            width: 100%;
+        }
+        
+        /* 支付方式区域 */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: var(--base-spacing);
+            margin-top: var(--base-spacing);
+        }
+        
+        .payment-method {
+            background: #f8f9fa;
+            border-radius: var(--card-radius);
+            padding: var(--base-spacing);
+            border: 0.05rem solid #e9ecef;
+        }
+        
+        .payment-title {
+            font-size: 0.75rem; /* 调整字体大小与其他页面一致 */
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .payment-title i {
+            margin-right: 0.4rem;
+        }
+        
+        .fa-alipay {
+            color: #1677ff;
+        }
+        
+        .fa-weixin {
+            color: #07c160;
+        }
+        
+        .payment-content {
+            font-size: 0.7rem; /* 调整字体大小与其他页面一致 */
+            color: var(--text-secondary);
+        }
+        
+        /* 验证码相关样式 */
+        .verification-code {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .verification-code input {
+            flex: 1;
+        }
+        
+        .send-code-btn {
+            padding: 0.6rem 0.7rem;
+            white-space: nowrap;
+            height: auto;
+            min-height: 2.5rem;
+        }
+        
+        /* 支付二维码上传区域 */
+        .qr-upload {
+            margin-top: 0.8rem;
+            text-align: center;
+        }
+        
+        .qr-image {
+            width: 5rem;
+            height: 5rem;
+            object-fit: contain;
+            border: 0.05rem dashed #ddd;
+            margin-bottom: 0.5rem;
+            border-radius: var(--card-radius);
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #666;
+            padding: 0.4rem 0.7rem;
+            border-radius: 0.4rem;
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .upload-btn:active {
+            background: #e0e0e0;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 0.9rem;
+            height: 0.9rem;
+            border: 0.1rem solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 保存成功提示 */
+        .toast {
+            position: fixed;
+            bottom: 5rem; /* 调整位置，避免与底部导航栏重叠 */
+            left: 50%;
+            transform: translateX(-50%) translateY(3rem);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--card-radius);
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1001;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.error {
+            background: rgba(244, 67, 54, 0.9);
+        }
+        
+        .toast.success {
+            background: rgba(76, 175, 80, 0.9);
+        }
+        
+        /* 底部导航 - 从消息页面复制并调整 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 3.5rem;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 0.55rem;
+            transition: all 0.2s ease;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: #ff7e00;
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 320px) {
+            .container {
+                padding: 0.7rem;
+            }
+            
+            .form-section {
+                padding: 0.7rem;
+            }
+            
+            .avatar {
+                width: 3rem;
+                height: 3rem;
+            }
+            
+            .send-code-btn {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.7rem;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .container {
+                max-width: 28rem;
+                margin: 0 auto;
+                width: 100%;
+            }
+            
+            .payment-methods {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 - 与其他页面保持一致 -->
+    <div class="profile-header">
+        <div class="profile-top">
+            <button class="back-btn" id="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="page-title">个人资料</div>
+            <div style="width: 1.5rem;"></div> <!-- 占位元素，保持标题居中 -->
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="container">
+        <!-- 基本信息 -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-user-circle"></i> 基本信息
+            </div>
+            
+            <div class="avatar-section">
+                <img src="https://via.placeholder.com/90" alt="头像" class="avatar" id="avatarImage">
+                <div class="user-info">
+                    <div class="user-name">小明同学</div>
+                    <div class="user-id">ID: 123456789</div>
+                </div>
+                <button class="btn btn-primary edit-btn" id="changeAvatarBtn">更换头像</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">昵称</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" class="form-input" id="nickname" value="小明同学">
+                </div>
+                <div class="error-message" id="nicknameError"></div>
+                <div class="field-changed" id="nicknameChanged">昵称已修改</div>
+            </div>
+            
+            <button class="btn btn-primary save-btn" id="saveBasicInfo">保存基本信息</button>
+        </div>
+        
+        <!-- 手机号码 -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-mobile-alt"></i> 手机号码
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">手机号码</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-mobile-alt input-icon"></i>
+                    <input type="tel" class="form-input" id="phone" value="13800138000">
+                </div>
+                <div class="error-message" id="phoneError"></div>
+                <div class="field-changed" id="phoneChanged">手机号已修改，需要验证码验证</div>
+                <div class="form-hint">绑定手机号可用于登录和找回密码</div>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">验证码</label>
+                    <div class="verification-code">
+                        <div class="input-with-icon" style="flex: 1;">
+                            <i class="fas fa-sms input-icon"></i>
+                            <input type="text" class="form-input" id="verificationCode" placeholder="请输入验证码">
+                        </div>
+                        <button class="btn btn-primary send-code-btn" id="sendCodeBtn">发送验证码</button>
+                    </div>
+                    <div class="error-message" id="verificationCodeError"></div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary save-btn" id="savePhone">保存手机设置</button>
+        </div>
+        
+        <!-- 密码设置 -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-lock"></i> 密码设置
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">当前密码</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input" id="currentPassword" placeholder="请输入当前密码">
+                </div>
+                <div class="error-message" id="currentPasswordError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">新密码</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input" id="newPassword" placeholder="请输入新密码">
+                </div>
+                <div class="error-message" id="newPasswordError"></div>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                </div>
+                <div class="password-strength-text" id="passwordStrengthText">密码强度：无</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">确认密码</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="请再次输入密码">
+                </div>
+                <div class="error-message" id="confirmPasswordError"></div>
+                <div class="form-hint">请至少使用字母、数字和特殊字符中的两种组合，长度不少于8位</div>
+            </div>
+            
+            <button class="btn btn-primary save-btn" id="savePassword">更新密码</button>
+        </div>
+        
+        <!-- 收款信息 -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-money-bill-wave"></i> 收款信息
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-method">
+                    <div class="payment-title">
+                        <i class="fab fa-alipay"></i> 支付宝
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">支付宝账号</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" class="form-input" id="alipayAccount" value="example@alipay.com">
+                        </div>
+                        <div class="error-message" id="alipayAccountError"></div>
+                        <div class="field-changed" id="alipayAccountChanged">支付宝账号已修改</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">姓名</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-signature input-icon"></i>
+                            <input type="text" class="form-input" id="alipayName" value="小明">
+                        </div>
+                        <div class="error-message" id="alipayNameError"></div>
+                        <div class="field-changed" id="alipayNameChanged">姓名已修改</div>
+                    </div>
+                    <div class="qr-upload">
+                        <img src="https://via.placeholder.com/100x100?text=支付宝二维码" class="qr-image" id="alipayQrImage">
+                        <div>
+                            <label for="alipayQrUpload" class="upload-btn">
+                                <i class="fas fa-upload"></i> 上传二维码
+                            </label>
+                            <input type="file" id="alipayQrUpload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="payment-method">
+                    <div class="payment-title">
+                        <i class="fab fa-weixin"></i> 微信支付
+                    </div>
+                    <div class="qr-upload">
+                        <img src="https://via.placeholder.com/100x100?text=微信二维码" class="qr-image" id="wechatQrImage">
+                        <div>
+                            <label for="wechatQrUpload" class="upload-btn">
+                                <i class="fas fa-upload"></i> 上传二维码
+                            </label>
+                            <input type="file" id="wechatQrUpload" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="payment-content" style="margin-top: 0.8rem; text-align: center;">
+                        微信已绑定<br>
+                        扫码向我付款
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary save-btn" id="savePayment">保存收款信息</button>
+        </div>
+    </div>
+    
+    <!-- 底部导航 - 从消息页面复制，并激活"我的"选项 -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <!-- 保存成功提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 工具函数模块
+        const utils = {
+            // 显示提示信息
+            showToast: function(message, type = 'default', duration = 2000) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = 'toast';
+                
+                if (type === 'error') {
+                    toast.classList.add('error');
+                } else if (type === 'success') {
+                    toast.classList.add('success');
+                }
+                
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, duration);
+            },
+            
+            // 显示错误信息
+            showError: function(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                document.getElementById(elementId.replace('Error', '')).classList.add('error');
+            },
+            
+            // 清除错误信息
+            clearError: function(elementId) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = '';
+                errorElement.style.display = 'none';
+                document.getElementById(elementId.replace('Error', '')).classList.remove('error');
+            },
+            
+            // 显示字段修改提示
+            showFieldChanged: function(elementId) {
+                const changedElement = document.getElementById(elementId);
+                changedElement.style.display = 'block';
+            },
+            
+            // 隐藏字段修改提示
+            hideFieldChanged: function(elementId) {
+                const changedElement = document.getElementById(elementId);
+                changedElement.style.display = 'none';
+            },
+            
+            // 验证手机号格式
+            validatePhone: function(phone) {
+                const regex = /^1[3-9]\d{9}$/;
+                return regex.test(phone);
+            },
+            
+            // 验证密码强度
+            validatePassword: function(password) {
+                if (password.length < 8) return 0;
+                
+                // 检查包含的字符类型
+                const hasLetter = /[a-zA-Z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+                
+                // 计算强度分数
+                let strength = 0;
+                if (hasLetter) strength++;
+                if (hasNumber) strength++;
+                if (hasSpecial) strength++;
+                
+                // 根据长度和字符类型多样性评分
+                if (password.length >= 12) strength++;
+                
+                return strength;
+            },
+            
+            // 验证邮箱格式
+            validateEmail: function(email) {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return regex.test(email);
+            },
+            
+            // 格式化文件大小
+            formatFileSize: function(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        };
+        
+        // 应用状态管理
+        const appState = {
+            initialPhone: '13800138000',
+            initialNickname: '小明同学',
+            initialAlipayAccount: 'example@alipay.com',
+            initialAlipayName: '小明',
+            isPhoneChanged: false,
+            isSendingCode: false,
+            countdown: 0,
+            countdownInterval: null
+        };
+        
+        // DOM 元素引用
+        const elements = {
+            backButton: document.getElementById('back-btn'),
+            changeAvatarBtn: document.getElementById('changeAvatarBtn'),
+            sendCodeBtn: document.getElementById('sendCodeBtn'),
+            alipayQrUpload: document.getElementById('alipayQrUpload'),
+            wechatQrUpload: document.getElementById('wechatQrUpload'),
+            nickname: document.getElementById('nickname'),
+            phone: document.getElementById('phone'),
+            verificationCode: document.getElementById('verificationCode'),
+            currentPassword: document.getElementById('currentPassword'),
+            newPassword: document.getElementById('newPassword'),
+            confirmPassword: document.getElementById('confirmPassword'),
+            alipayAccount: document.getElementById('alipayAccount'),
+            alipayName: document.getElementById('alipayName'),
+            saveBasicInfo: document.getElementById('saveBasicInfo'),
+            savePhone: document.getElementById('savePhone'),
+            savePassword: document.getElementById('savePassword'),
+            savePayment: document.getElementById('savePayment'),
+            passwordStrengthBar: document.getElementById('passwordStrengthBar'),
+            passwordStrengthText: document.getElementById('passwordStrengthText')
+        };
+        
+        // 初始化应用
+        function initApp() {
+            // 设置初始值
+            appState.initialPhone = elements.phone.value;
+            appState.initialNickname = elements.nickname.value;
+            appState.initialAlipayAccount = elements.alipayAccount.value;
+            appState.initialAlipayName = elements.alipayName.value;
+            
+            // 监听字段变化
+            setupFieldChangeListeners();
+            
+            // 返回按钮功能
+            elements.backButton.addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            // 保存按钮事件
+            elements.saveBasicInfo.addEventListener('click', handleSaveBasicInfo);
+            elements.savePhone.addEventListener('click', handleSavePhone);
+            elements.savePassword.addEventListener('click', handleSavePassword);
+            elements.savePayment.addEventListener('click', handleSavePayment);
+            
+            // 更换头像功能
+            elements.changeAvatarBtn.addEventListener('click', handleAvatarChange);
+            
+            // 发送验证码功能
+            elements.sendCodeBtn.addEventListener('click', handleSendVerificationCode);
+            
+            // 二维码上传
+            elements.alipayQrUpload.addEventListener('change', function(e) {
+                handleImageUpload(e, 'alipayQrImage');
+            });
+            
+            elements.wechatQrUpload.addEventListener('change', function(e) {
+                handleImageUpload(e, 'wechatQrImage');
+            });
+            
+            // 密码强度实时显示
+            elements.newPassword.addEventListener('input', updatePasswordStrength);
+            
+            // 输入框验证
+            setupInputValidation();
+        }
+        
+        // 设置字段变化监听
+        function setupFieldChangeListeners() {
+            // 昵称变化
+            elements.nickname.addEventListener('input', function() {
+                if (this.value !== appState.initialNickname) {
+                    utils.showFieldChanged('nicknameChanged');
+                } else {
+                    utils.hideFieldChanged('nicknameChanged');
+                }
+            });
+            
+            // 手机号变化
+            elements.phone.addEventListener('input', function() {
+                appState.isPhoneChanged = this.value !== appState.initialPhone;
+                if (appState.isPhoneChanged) {
+                    utils.showFieldChanged('phoneChanged');
+                } else {
+                    utils.hideFieldChanged('phoneChanged');
+                }
+                utils.clearError('phoneError');
+            });
+            
+            // 支付宝账号变化
+            elements.alipayAccount.addEventListener('input', function() {
+                if (this.value !== appState.initialAlipayAccount) {
+                    utils.showFieldChanged('alipayAccountChanged');
+                } else {
+                    utils.hideFieldChanged('alipayAccountChanged');
+                }
+            });
+            
+            // 支付宝姓名变化
+            elements.alipayName.addEventListener('input', function() {
+                if (this.value !== appState.initialAlipayName) {
+                    utils.showFieldChanged('alipayNameChanged');
+                } else {
+                    utils.hideFieldChanged('alipayNameChanged');
+                }
+            });
+        }
+        
+        // 设置输入验证
+        function setupInputValidation() {
+            // 昵称验证
+            elements.nickname.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    utils.showError('nicknameError', '昵称不能为空');
+                } else {
+                    utils.clearError('nicknameError');
+                }
+            });
+            
+            // 手机号验证
+            elements.phone.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    utils.showError('phoneError', '手机号不能为空');
+                } else if (!utils.validatePhone(this.value)) {
+                    utils.showError('phoneError', '请输入有效的手机号码');
+                } else {
+                    utils.clearError('phoneError');
+                }
+            });
+            
+            // 支付宝账号验证
+            elements.alipayAccount.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    utils.showError('alipayAccountError', '支付宝账号不能为空');
+                } else if (!utils.validateEmail(this.value) && !utils.validatePhone(this.value)) {
+                    utils.showError('alipayAccountError', '请输入有效的手机号或邮箱');
+                } else {
+                    utils.clearError('alipayAccountError');
+                }
+            });
+            
+            // 支付宝姓名验证
+            elements.alipayName.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    utils.showError('alipayNameError', '姓名不能为空');
+                } else {
+                    utils.clearError('alipayNameError');
+                }
+            });
+            
+            // 确认密码验证
+            elements.confirmPassword.addEventListener('blur', function() {
+                if (this.value !== elements.newPassword.value) {
+                    utils.showError('confirmPasswordError', '两次输入的密码不一致');
+                } else {
+                    utils.clearError('confirmPasswordError');
+                }
+            });
+        }
+        
+        // 更新密码强度显示
+        function updatePasswordStrength() {
+            const password = elements.newPassword.value;
+            if (!password) {
+                elements.passwordStrengthBar.style.width = '0%';
+                elements.passwordStrengthBar.style.backgroundColor = '#f0f0f0';
+                elements.passwordStrengthText.textContent = '密码强度：无';
+                return;
+            }
+            
+            const strength = utils.validatePassword(password);
+            let width, color, text;
+            
+            switch (strength) {
+                case 0:
+                case 1:
+                    width = '25%';
+                    color = '#f44336';
+                    text = '弱';
+                    break;
+                case 2:
+                    width = '50%';
+                    color = '#ff9800';
+                    text = '中';
+                    break;
+                case 3:
+                    width = '75%';
+                    color = '#4caf50';
+                    text = '强';
+                    break;
+                case 4:
+                    width = '100%';
+                    color = '#2e7d32';
+                    text = '非常强';
+                    break;
+                default:
+                    width = '0%';
+                    color = '#f0f0f0';
+                    text = '无';
+            }
+            
+            elements.passwordStrengthBar.style.width = width;
+            elements.passwordStrengthBar.style.backgroundColor = color;
+            elements.passwordStrengthText.textContent = `密码强度：${text}`;
+            
+            // 清除错误信息
+            if (strength >= 2) {
+                utils.clearError('newPasswordError');
+            } else if (password.length > 0) {
+                utils.showError('newPasswordError', '密码需至少8位，且包含字母、数字和特殊字符中的两种');
+            }
+        }
+        
+        // 处理保存基本信息
+        function handleSaveBasicInfo() {
+            let isValid = true;
+            
+            // 验证昵称
+            if (!elements.nickname.value.trim()) {
+                utils.showError('nicknameError', '昵称不能为空');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                utils.showToast('请完善表单信息', 'error');
+                return;
+            }
+            
+            // 显示保存中状态
+            elements.saveBasicInfo.innerHTML = '<div class="loading"></div> 保存中...';
+            elements.saveBasicInfo.disabled = true;
+            
+            // 模拟保存操作
+            setTimeout(() => {
+                // 实际应用中这里应该提交数据到服务器
+                console.log('保存基本信息:', {
+                    nickname: elements.nickname.value
+                });
+                
+                // 恢复保存按钮状态
+                elements.saveBasicInfo.innerHTML = '保存基本信息';
+                elements.saveBasicInfo.disabled = false;
+                
+                // 更新初始昵称
+                appState.initialNickname = elements.nickname.value;
+                utils.hideFieldChanged('nicknameChanged');
+                
+                // 显示成功提示
+                utils.showToast('基本信息保存成功', 'success');
+            }, 1500);
+        }
+        
+        // 处理保存手机设置
+        function handleSavePhone() {
+            let isValid = true;
+            
+            // 验证手机号
+            if (!elements.phone.value.trim()) {
+                utils.showError('phoneError', '手机号不能为空');
+                isValid = false;
+            } else if (!utils.validatePhone(elements.phone.value)) {
+                utils.showError('phoneError', '请输入有效的手机号码');
+                isValid = false;
+            }
+            
+            // 如果手机号已修改，需要验证码
+            if (appState.isPhoneChanged && !elements.verificationCode.value.trim()) {
+                utils.showError('verificationCodeError', '请填写验证码');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                utils.showToast('请完善表单信息', 'error');
+                return;
+            }
+            
+            // 显示保存中状态
+            elements.savePhone.innerHTML = '<div class="loading"></div> 保存中...';
+            elements.savePhone.disabled = true;
+            
+            // 模拟保存操作
+            setTimeout(() => {
+                // 实际应用中这里应该提交数据到服务器
+                console.log('保存手机设置:', {
+                    phone: elements.phone.value,
+                    verificationCode: elements.verificationCode.value
+                });
+                
+                // 恢复保存按钮状态
+                elements.savePhone.innerHTML = '保存手机设置';
+                elements.savePhone.disabled = false;
+                
+                // 更新初始手机号
+                appState.initialPhone = elements.phone.value;
+                appState.isPhoneChanged = false;
+                utils.hideFieldChanged('phoneChanged');
+                
+                // 显示成功提示
+                utils.showToast('手机设置保存成功', 'success');
+            }, 1500);
+        }
+        
+        // 处理保存密码
+        function handleSavePassword() {
+            let isValid = true;
+            
+            // 验证当前密码
+            if (!elements.currentPassword.value.trim()) {
+                utils.showError('currentPasswordError', '当前密码不能为空');
+                isValid = false;
+            }
+            
+            // 验证密码强度
+            const passwordStrength = utils.validatePassword(elements.newPassword.value);
+            if (elements.newPassword.value && passwordStrength < 2) {
+                utils.showError('newPasswordError', '密码需至少8位，且包含字母、数字和特殊字符中的两种');
+                isValid = false;
+            }
+            
+            // 验证确认密码
+            if (elements.newPassword.value !== elements.confirmPassword.value) {
+                utils.showError('confirmPasswordError', '两次输入的密码不一致');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                utils.showToast('请完善表单信息', 'error');
+                return;
+            }
+            
+            // 显示保存中状态
+            elements.savePassword.innerHTML = '<div class="loading"></div> 保存中...';
+            elements.savePassword.disabled = true;
+            
+            // 模拟保存操作
+            setTimeout(() => {
+                // 实际应用中这里应该提交数据到服务器
+                console.log('保存密码设置:', {
+                    currentPassword: elements.currentPassword.value,
+                    newPassword: elements.newPassword.value
+                });
+                
+                // 恢复保存按钮状态
+                elements.savePassword.innerHTML = '更新密码';
+                elements.savePassword.disabled = false;
+                
+                // 清空密码字段
+                elements.currentPassword.value = '';
+                elements.newPassword.value = '';
+                elements.confirmPassword.value = '';
+                
+                // 重置密码强度显示
+                updatePasswordStrength();
+                
+                // 显示成功提示
+                utils.showToast('密码更新成功', 'success');
+            }, 1500);
+        }
+        
+        // 处理保存收款信息
+        function handleSavePayment() {
+            let isValid = true;
+            
+            // 验证支付宝账号
+            if (!elements.alipayAccount.value.trim()) {
+                utils.showError('alipayAccountError', '支付宝账号不能为空');
+                isValid = false;
+            } else if (!utils.validateEmail(elements.alipayAccount.value) && !utils.validatePhone(elements.alipayAccount.value)) {
+                utils.showError('alipayAccountError', '请输入有效的手机号或邮箱');
+                isValid = false;
+            }
+            
+            // 验证支付宝姓名
+            if (!elements.alipayName.value.trim()) {
+                utils.showError('alipayNameError', '姓名不能为空');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                utils.showToast('请完善表单信息', 'error');
+                return;
+            }
+            
+            // 显示保存中状态
+            elements.savePayment.innerHTML = '<div class="loading"></div> 保存中...';
+            elements.savePayment.disabled = true;
+            
+            // 模拟保存操作
+            setTimeout(() => {
+                // 实际应用中这里应该提交数据到服务器
+                console.log('保存收款信息:', {
+                    alipayAccount: elements.alipayAccount.value,
+                    alipayName: elements.alipayName.value
+                });
+                
+                // 恢复保存按钮状态
+                elements.savePayment.innerHTML = '保存收款信息';
+                elements.savePayment.disabled = false;
+                
+                // 更新初始值
+                appState.initialAlipayAccount = elements.alipayAccount.value;
+                appState.initialAlipayName = elements.alipayName.value;
+                utils.hideFieldChanged('alipayAccountChanged');
+                utils.hideFieldChanged('alipayNameChanged');
+                
+                // 显示成功提示
+                utils.showToast('收款信息保存成功', 'success');
+            }, 1500);
+        }
+        
+        // 处理头像更换
+        function handleAvatarChange() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // 检查文件类型
+                if (!file.type.startsWith('image/')) {
+                    utils.showToast('请选择图片文件', 'error');
+                    return;
+                }
+                
+                // 检查文件大小 (限制为2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    utils.showToast(`图片大小不能超过2MB，当前为${utils.formatFileSize(file.size)}`, 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('avatarImage').src = event.target.result;
+                    utils.showToast('头像更新成功', 'success');
+                };
+                reader.readAsDataURL(file);
+            };
+            
+            fileInput.click();
+        }
+        
+        // 处理发送验证码
+        function handleSendVerificationCode() {
+            if (appState.isSendingCode) return;
+            
+            const phone = elements.phone.value;
+            
+            if (!phone) {
+                utils.showError('phoneError', '请先填写手机号码');
+                return;
+            }
+            
+            if (!utils.validatePhone(phone)) {
+                utils.showError('phoneError', '请输入有效的手机号码');
+                return;
+            }
+            
+            // 设置发送状态
+            appState.isSendingCode = true;
+            elements.sendCodeBtn.disabled = true;
+            elements.sendCodeBtn.innerHTML = '<div class="loading"></div> 发送中';
+            
+            // 模拟发送请求
+            setTimeout(() => {
+                // 实际应用中这里应该调用发送验证码的API
+                console.log('发送验证码到手机:', phone);
+                
+                // 启动倒计时
+                startCountdown();
+                
+                // 显示发送成功提示
+                utils.showToast('验证码已发送', 'success');
+            }, 1000);
+        }
+        
+        // 开始倒计时
+        function startCountdown() {
+            appState.countdown = 60;
+            elements.sendCodeBtn.disabled = true;
+            elements.sendCodeBtn.textContent = `重新发送(${appState.countdown})`;
+            
+            appState.countdownInterval = setInterval(() => {
+                appState.countdown--;
+                
+                if (appState.countdown <= 0) {
+                    clearInterval(appState.countdownInterval);
+                    elements.sendCodeBtn.disabled = false;
+                    elements.sendCodeBtn.textContent = '发送验证码';
+                    appState.isSendingCode = false;
+                } else {
+                    elements.sendCodeBtn.textContent = `重新发送(${appState.countdown})`;
+                }
+            }, 1000);
+        }
+        
+        // 处理图片上传
+        function handleImageUpload(event, imageElementId) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // 检查文件类型
+            if (!file.type.startsWith('image/')) {
+                utils.showToast('请选择图片文件', 'error');
+                return;
+            }
+            
+            // 检查文件大小 (限制为2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                utils.showToast(`图片大小不能超过2MB，当前为${utils.formatFileSize(file.size)}`, 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(imageElementId).src = e.target.result;
+                utils.showToast('上传成功', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>index
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的账单 - 轻松工作</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            padding-bottom: 3.5rem; /* 调整底部内边距以适应固定导航栏 */
+        }
+        
+        /* 顶部区域 */
+        .header {
+            padding: 0.6rem 0.8rem 0.8rem;
+            background: linear-gradient(135deg, #ff7e00, #ff5f00);
+            color: white;
+            border-bottom-left-radius: 0.8rem;
+            border-bottom-right-radius: 0.8rem;
+            box-shadow: 0 0.15rem 0.6rem rgba(255, 111, 0, 0.25);
+            flex-shrink: 0;
+        }
+        
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+        
+        .back-button {
+            color: white;
+            font-size: 1rem;
+            width: 1.8rem;
+            height: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .page-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: 0 0.08rem 0.15rem rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 财务概览区域 */
+        .overview-section {
+            background: white;
+            margin: 0.8rem;
+            border-radius: 0.6rem;
+            padding: 0.8rem;
+            box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .overview-item {
+            text-align: center;
+            flex: 1;
+            padding: 0.5rem;
+        }
+        
+        .overview-label {
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 0.4rem;
+        }
+        
+        .overview-value {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #ff7e00;
+        }
+        
+        .overview-trend {
+            font-size: 0.6rem;
+            color: #4caf50;
+            margin-top: 0.2rem;
+        }
+        
+        .overview-trend.negative {
+            color: #f44336;
+        }
+        
+        /* 账单选项卡和筛选区域 */
+        .tabs-filter-container {
+            background-color: white;
+            margin: 0.8rem;
+            border-radius: 0.6rem;
+            box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tabs-container {
+            padding: 0.6rem;
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            gap: 0.4rem;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 0.4rem 0.5rem;
+            border-radius: 0.9rem;
+            background: #f8f9fa;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+        
+        .tab.active {
+            background: #ff7e00;
+            color: white;
+            box-shadow: 0 0.15rem 0.4rem rgba(255, 126, 0, 0.25);
+        }
+        
+        .filter-section {
+            border-top: 1px solid #f0f0f0;
+            padding: 0.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sort-button, .filter-button {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 0.6rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.65rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sort-button:hover, .filter-button:hover {
+            background: #eeeeee;
+        }
+        
+        .sort-button i, .filter-button i {
+            font-size: 0.7rem;
+        }
+        
+        /* 账单列表 */
+        .bills-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 0.6rem 0.6rem;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        .bill-list {
+            display: none;
+        }
+        
+        .bill-list.active {
+            display: block;
+        }
+        
+        .bill-item {
+            background: white;
+            border-radius: 0.6rem;
+            padding: 0.65rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .bill-item:hover {
+            transform: translateY(-0.1rem);
+            box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08);
+        }
+        
+        .bill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.3rem;
+        }
+        
+        .bill-type {
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .bill-type i {
+            margin-right: 0.3rem;
+            font-size: 0.7rem;
+            width: 0.9rem;
+        }
+        
+        .income .bill-type i {
+            color: #4caf50;
+        }
+        
+        .expense .bill-type i {
+            color: #f44336;
+        }
+        
+        .bill-amount {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .income .bill-amount {
+            color: #4caf50;
+        }
+        
+        .expense .bill-amount {
+            color: #f44336;
+        }
+        
+        .bill-time {
+            font-size: 0.6rem;
+            color: #999;
+            margin-bottom: 0.4rem;
+        }
+        
+        .bill-details {
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 0.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .bill-status {
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.4rem;
+            font-size: 0.55rem;
+            font-weight: 500;
+        }
+        
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .status-pending {
+            background-color: #fff8e1;
+            color: #ff9800;
+        }
+        
+        .status-failed {
+            background-color: #ffebee;
+            color: #f44336;
+        }
+        
+        /* 账单详情弹窗 */
+        .bill-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .bill-detail-content {
+            background-color: white;
+            border-radius: 0.8rem;
+            width: 100%;
+            max-width: 400px;
+            padding: 1rem;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+            font-size: 1rem;
+            color: #999;
+            cursor: pointer;
+        }
+        
+        .detail-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .detail-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .detail-income {
+            color: #4caf50;
+        }
+        
+        .detail-expense {
+            color: #f44336;
+        }
+        
+        .detail-item {
+            margin-bottom: 0.8rem;
+        }
+        
+        .detail-label {
+            font-size: 0.65rem;
+            color: #999;
+            margin-bottom: 0.2rem;
+        }
+        
+        .detail-value {
+            font-size: 0.75rem;
+            color: #333;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            /* 确保导航栏在页面最上层 */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 0.55rem;
+            transition: all 0.2s ease;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: #ff7e00;
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #aaa;
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+            color: #ccc;
+        }
+        
+        .empty-state p {
+            font-size: 0.7rem;
+            color: #999;
+        }
+        
+        /* 加载更多 */
+        .load-more {
+            text-align: center;
+            padding: 0.8rem;
+            color: #666;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .load-more:hover {
+            color: #ff7e00;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #ff7e00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 筛选弹窗 */
+        .filter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .filter-content {
+            background-color: white;
+            border-radius: 0.8rem;
+            width: 100%;
+            max-width: 300px;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .filter-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .filter-option {
+            margin-bottom: 0.8rem;
+        }
+        
+        .filter-option label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 0.3rem;
+            color: #333;
+        }
+        
+        .filter-option select {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.4rem;
+            border: 1px solid #e0e0e0;
+            font-size: 0.7rem;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .filter-button-reset, .filter-button-apply {
+            padding: 0.5rem 1rem;
+            border-radius: 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button-reset {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .filter-button-apply {
+            background: #ff7e00;
+            color: white;
+            border: none;
+        }
+        
+        /* 媒体查询适配不同尺⼨设备 */
+        @media (max-width: 320px) {
+            .overview-item {
+                padding: 0.3rem;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+            
+            .sort-button, .filter-button {
+                justify-content: center;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .overview-section {
+                padding: 1rem;
+            }
+            
+            .overview-value {
+                font-size: 1.1rem;
+            }
+            
+            .bill-item {
+                padding: 0.8rem;
+            }
+            
+            .bill-type {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 -->
+    <div class="header">
+        <div class="top-section">
+            <div class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="page-title">我的账单</div>
+            <!-- 占位元素，保持对称 -->
+            <div style="width: 1.8rem;"></div>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content">
+        <!-- 财务概览区域 -->
+        <div class="overview-section">
+            <div class="overview-item">
+                <div class="overview-label">本月收入</div>
+                <div class="overview-value">¥856.50</div>
+                <div class="overview-trend">↑ 12.5%</div>
+            </div>
+            <div class="overview-item">
+                <div class="overview-label">本月支出</div>
+                <div class="overview-value">¥128.25</div>
+                <div class="overview-trend negative">↓ 5.2%</div>
+            </div>
+            <div class="overview-item">
+                <div class="overview-label">账户余额</div>
+                <div class="overview-value">¥328.50</div>
+                <div class="overview-trend">可提现</div>
+            </div>
+        </div>
+        
+        <!-- 账单选项卡和筛选区域 -->
+        <div class="tabs-filter-container">
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active" data-target="all">全部记录</div>
+                    <div class="tab" data-target="income">收入</div>
+                    <div class="tab" data-target="expense">支出</div>
+                    <div class="tab" data-target="withdraw">提现</div>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <button class="sort-button" id="sortButton">
+                    <i class="fas fa-sort-amount-down"></i>
+                    <span>最新优先</span>
+                </button>
+                <button class="filter-button" id="filterButton">
+                    <i class="fas fa-filter"></i>
+                    <span>筛选</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 账单列表 - 可滚动区域 -->
+        <div class="bills-scroll-container" id="billsScrollContainer">
+            <!-- 全部记录 -->
+            <div class="bill-list active" id="all">
+                <!-- 账单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 收入 -->
+            <div class="bill-list" id="income">
+                <!-- 账单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 支出 -->
+            <div class="bill-list" id="expense">
+                <!-- 账单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 提现 -->
+            <div class="bill-list" id="withdraw">
+                <!-- 账单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 加载更多 -->
+            <div class="load-more" id="loadMore">
+                <span>加载更多</span>
+            </div>
+            
+            <!-- 空状态提示 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-receipt"></i>
+                <p>暂无账单记录</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 账单详情弹窗 -->
+    <div class="bill-detail-modal" id="billDetailModal">
+        <div class="bill-detail-content">
+            <div class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="detail-header">
+                <div class="detail-title" id="detailTitle">任务收入</div>
+                <div class="detail-amount detail-income" id="detailAmount">+¥15.00</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">交易时间</div>
+                <div class="detail-value" id="detailTime">2025-08-25 14:30</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">交易单号</div>
+                <div class="detail-value" id="detailId">BIL-20250825-001</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">交易详情</div>
+                <div class="detail-value" id="detailDetails">网站用户体验测试 - TSK-20250820-001</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">交易状态</div>
+                <div class="detail-value">
+                    <span class="bill-status status-completed" id="detailStatus">已完成</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 筛选弹窗 -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-content">
+            <div class="filter-title">账单筛选</div>
+            <div class="filter-option">
+                <label for="statusFilter">状态筛选</label>
+                <select id="statusFilter">
+                    <option value="all">全部状态</option>
+                    <option value="completed">已完成</option>
+                    <option value="pending">处理中</option>
+                    <option value="failed">失败</option>
+                </select>
+            </div>
+            <div class="filter-option">
+                <label for="timeFilter">时间范围</label>
+                <select id="timeFilter">
+                    <option value="all">全部时间</option>
+                    <option value="week">最近一周</option>
+                    <option value="month">最近一个月</option>
+                    <option value="quarter">最近三个月</option>
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-button-reset" id="resetFilter">重置</button>
+                <button class="filter-button-apply" id="applyFilter">应用</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+    <script>
+        // 账单数据
+        const bills = {
+            all: [
+                { 
+                    id: 'BIL-20250825-001',
+                    type: '任务收入', 
+                    icon: 'fa-tasks',
+                    amount: 15.00, 
+                    time: '2025-08-25 14:30', 
+                    details: '网站用户体验测试 - TSK-20250820-001',
+                    status: 'completed',
+                    category: 'income'
+                },
+                { 
+                    id: 'BIL-20250824-002',
+                    type: '任务收入', 
+                    icon: 'fa-tasks',
+                    amount: 8.00, 
+                    time: '2025-08-24 11:20', 
+                    details: '商品信息录入 - TSK-20250821-002',
+                    status: 'completed',
+                    category: 'income'
+                },
+                { 
+                    id: 'BIL-20250823-003',
+                    type: '提现', 
+                    icon: 'fa-wallet',
+                    amount: -100.00, 
+                    time: '2025-08-23 09:15', 
+                    details: '提现到支付宝',
+                    status: 'completed',
+                    category: 'withdraw'
+                },
+                { 
+                    id: 'BIL-20250822-004',
+                    type: '平台服务费', 
+                    icon: 'fa-percentage',
+                    amount: -2.25, 
+                    time: '2025-08-22 16:45', 
+                    details: '任务TSK-20250822-004服务费',
+                    status: 'completed',
+                    category: 'expense'
+                },
+                { 
+                    id: 'BIL-20250821-005',
+                    type: '任务收入', 
+                    icon: 'fa-tasks',
+                    amount: 35.00, 
+                    time: '2025-08-21 21:30', 
+                    details: '产品使用体验文章 - TSK-20250821-005',
+                    status: 'completed',
+                    category: 'income'
+                },
+                { 
+                    id: 'BIL-20250820-006',
+                    type: '提现', 
+                    icon: 'fa-wallet',
+                    amount: -50.00, 
+                    time: '2025-08-20 14:20', 
+                    details: '提现到微信',
+                    status: 'completed',
+                    category: 'withdraw'
+                },
+                { 
+                    id: 'BIL-20250819-007',
+                    type: '平台服务费', 
+                    icon: 'fa-percentage',
+                    amount: -7.50, 
+                    time: '2025-08-19 09:15', 
+                    details: '任务TSK-20250819-003服务费',
+                    status: 'completed',
+                    category: 'expense'
+                },
+                { 
+                    id: 'BIL-20250818-008',
+                    type: '邀请奖励', 
+                    icon: 'fa-gift',
+                    amount: 30.00, 
+                    time: '2025-08-18 16:30', 
+                    details: '成功邀请好友注册',
+                    status: 'completed',
+                    category: 'income'
+                }
+            ],
+            income: [
+                { 
+                    id: 'BIL-20250825-001',
+                    type: '任务收入', 
+                    icon: 'fa-tasks',
+                    amount: 15.00, 
+                    time: '2025-08-25 14:30', 
+                    details: '网站用户体验测试 - TSK-20250820-001',
+                    status: 'completed',
+                    category: 'income'
+                },
+                { 
+                    id: 'BIL-20250824-002',
+                    type: '任务收入', 
+                    icon: 'fa-tasks',
+                    amount: 8.00, 
+                    time: '2025-08-24 11:20', 
+                    details: '商品信息录入 - TSK-20250821-002',
+                    status: 'completed',
+                    category: 'income'
+                },
+                { 
+                    id: 'BIL-20250821-005',
+                    type: '任务收入', 
+                    icon: 'fa-tasks',
+                    amount: 35.00, 
+                    time: '2025-08-21 21:30', 
+                    details: '产品使用体验文章 - TSK-20250821-005',
+                    status: 'completed',
+                    category: 'income'
+                },
+                { 
+                    id: 'BIL-20250818-008',
+                    type: '邀请奖励', 
+                    icon: 'fa-gift',
+                    amount: 30.00, 
+                    time: '2025-08-18 16:30', 
+                    details: '成功邀请好友注册',
+                    status: 'completed',
+                    category: 'income'
+                }
+            ],
+            expense: [
+                { 
+                    id: 'BIL-20250822-004',
+                    type: '平台服务费', 
+                    icon: 'fa-percentage',
+                    amount: -2.25, 
+                    time: '2025-08-22 16:45', 
+                    details: '任务TSK-20250822-004服务费',
+                    status: 'completed',
+                    category: 'expense'
+                },
+                { 
+                    id: 'BIL-20250819-007',
+                    type: '平台服务费', 
+                    icon: 'fa-percentage',
+                    amount: -7.50, 
+                    time: '2025-08-19 09:15', 
+                    details: '任务TSK-20250819-003服务费',
+                    status: 'completed',
+                    category: 'expense'
+                }
+            ],
+            withdraw: [
+                { 
+                    id: 'BIL-20250823-003',
+                    type: '提现', 
+                    icon: 'fa-wallet',
+                    amount: -100.00, 
+                    time: '2025-08-23 09:15', 
+                    details: '提现到支付宝',
+                    status: 'completed',
+                    category: 'withdraw'
+                },
+                { 
+                    id: 'BIL-20250820-006',
+                    type: '提现', 
+                    icon: 'fa-wallet',
+                    amount: -50.00, 
+                    time: '2025-08-20 14:20', 
+                    details: '提现到微信',
+                    status: 'completed',
+                    category: 'withdraw'
+                }
+            ]
+        };
+
+        // 当前显示的账单分类
+        let currentCategory = 'all';
+        // 当前排序方式
+        let currentSort = 'time-desc';
+        // 当前筛选条件
+        let currentFilter = {
+            status: 'all',
+            time: 'all'
+        };
+        // 当前显示的项目数量
+        let displayedItems = 5;
+        // 当前选中的账单
+        let selectedBill = null;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化账单列表
+            renderBills();
+            
+            // 选项卡切换功能
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有active类
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // 添加active类到当前选项卡
+                    tab.classList.add('active');
+                    currentCategory = tab.getAttribute('data-target');
+                    displayedItems = 5; // 重置显示数量
+                    renderBills();
+                });
+            });
+            
+            // 返回按钮功能
+            document.querySelector('.back-button').addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            // 排序按钮功能
+            document.getElementById('sortButton').addEventListener('click', function() {
+                // 切换排序方式
+                if (currentSort === 'time-desc') {
+                    currentSort = 'time-asc';
+                    this.innerHTML = '<i class="fas fa-sort-amount-up"></i><span>最旧优先</span>';
+                } else {
+                    currentSort = 'time-desc';
+                    this.innerHTML = '<i class="fas fa-sort-amount-down"></i><span>最新优先</span>';
+                }
+                renderBills();
+            });
+            
+            // 筛选按钮功能
+            document.getElementById('filterButton').addEventListener('click', function() {
+                document.getElementById('filterModal').style.display = 'flex';
+            });
+            
+            // 关闭筛选弹窗
+            document.getElementById('resetFilter').addEventListener('click', function() {
+                document.getElementById('statusFilter').value = 'all';
+                document.getElementById('timeFilter').value = 'all';
+            });
+            
+            // 应用筛选
+            document.getElementById('applyFilter').addEventListener('click', function() {
+                currentFilter.status = document.getElementById('statusFilter').value;
+                currentFilter.time = document.getElementById('timeFilter').value;
+                document.getElementById('filterModal').style.display = 'none';
+                renderBills();
+            });
+            
+            // 关闭筛选弹窗
+            document.querySelectorAll('.filter-modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 加载更多功能
+            document.getElementById('loadMore').addEventListener('click', function() {
+                displayedItems += 5;
+                renderBills();
+            });
+            
+            // 关闭详情弹窗
+            document.getElementById('closeModal').addEventListener('click', function() {
+                document.getElementById('billDetailModal').style.display = 'none';
+            });
+            
+            // 关闭详情弹窗（点击背景）
+            document.getElementById('billDetailModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+
+        // 格式化日期时间显示
+        function formatDateTime(dateTimeStr) {
+            const date = new Date(dateTimeStr);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return `今天 ${date.getHours()}:${padZero(date.getMinutes())}`;
+            } else if (diffDays === 1) {
+                return `昨天 ${date.getHours()}:${padZero(date.getMinutes())}`;
+            } else if (diffDays < 7) {
+                return `${diffDays}天前 ${date.getHours()}:${padZero(date.getMinutes())}`;
+            } else {
+                return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
+            }
+        }
+
+        // 数字补零
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            switch(status) {
+                case 'completed': return '已完成';
+                case 'pending': return '处理中';
+                case 'failed': return '失败';
+                default: return '未知';
+            }
+        }
+        
+        // 筛选账单
+        function filterBills(bills) {
+            return bills.filter(bill => {
+                // 状态筛选
+                if (currentFilter.status !== 'all' && bill.status !== currentFilter.status) {
+                    return false;
+                }
+                
+                // 时间筛选
+                if (currentFilter.time !== 'all') {
+                    const billDate = new Date(bill.time);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - billDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    switch(currentFilter.time) {
+                        case 'week':
+                            if (diffDays > 7) return false;
+                            break;
+                        case 'month':
+                            if (diffDays > 30) return false;
+                            break;
+                        case 'quarter':
+                            if (diffDays > 90) return false;
+                            break;
+                    }
+                }
+                
+                return true;
+            });
+        }
+        
+        // 排序账单
+        function sortBills(bills) {
+            return bills.sort((a, b) => {
+                const dateA = new Date(a.time);
+                const dateB = new Date(b.time);
+                
+                if (currentSort === 'time-desc') {
+                    return dateB - dateA;
+                } else {
+                    return dateA - dateB;
+                }
+            });
+        }
+
+        // 渲染账单列表
+        function renderBills() {
+            const billList = document.getElementById(currentCategory);
+            if (!billList) return;
+            
+            // 隐藏所有账单列表
+            document.querySelectorAll('.bill-list').forEach(list => {
+                list.classList.remove('active');
+            });
+            
+            // 显示当前账单列表
+            billList.classList.add('active');
+            
+            // 清空当前账单列表
+            billList.innerHTML = '';
+            
+            // 获取当前分类的账单
+            let categoryBills = [...(bills[currentCategory] || [])];
+            
+            // 应用筛选
+            categoryBills = filterBills(categoryBills);
+            
+            // 应用排序
+            categoryBills = sortBills(categoryBills);
+            
+            // 显示或隐藏空状态
+            const emptyState = document.getElementById('emptyState');
+            if (categoryBills.length === 0) {
+                emptyState.style.display = 'block';
+                document.getElementById('loadMore').style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                
+                // 显示或隐藏加载更多按钮
+                if (categoryBills.length > displayedItems) {
+                    document.getElementById('loadMore').style.display = 'block';
+                } else {
+                    document.getElementById('loadMore').style.display = 'none';
+                }
+            }
+            
+            // 添加账单项（限制数量）
+            const billsToShow = categoryBills.slice(0, displayedItems);
+            
+            billsToShow.forEach(bill => {
+                const isIncome = bill.amount > 0;
+                const billItem = document.createElement('div');
+                billItem.className = `bill-item ${isIncome ? 'income' : 'expense'}`;
+                billItem.dataset.billId = bill.id;
+                
+                billItem.innerHTML = `
+                    <div class="bill-header">
+                        <div class="bill-type">
+                            <i class="fas ${bill.icon}"></i>${bill.type}
+                        </div>
+                        <div class="bill-amount">${isIncome ? '+' : ''}¥${Math.abs(bill.amount).toFixed(2)}</div>
+                    </div>
+                    <div class="bill-time">${formatDateTime(bill.time)}</div>
+                    <div class="bill-details">${bill.details}</div>
+                    <span class="bill-status status-${bill.status}">${getStatusText(bill.status)}</span>
+                `;
+                
+                // 添加点击事件显示详情
+                billItem.addEventListener('click', () => {
+                    showBillDetail(bill);
+                });
+                
+                billList.appendChild(billItem);
+            });
+        }
+        
+        // 显示账单详情
+        function showBillDetail(bill) {
+            const modal = document.getElementById('billDetailModal');
+            const isIncome = bill.amount > 0;
+            
+            document.getElementById('detailTitle').textContent = bill.type;
+            document.getElementById('detailAmount').textContent = `${isIncome ? '+' : '-'}¥${Math.abs(bill.amount).toFixed(2)}`;
+            document.getElementById('detailAmount').className = isIncome ? 'detail-amount detail-income' : 'detail-amount detail-expense';
+            document.getElementById('detailTime').textContent = formatDateTime(bill.time);
+            document.getElementById('detailId').textContent = bill.id;
+            document.getElementById('detailDetails').textContent = bill.details;
+            
+            const statusElement = document.getElementById('detailStatus');
+            statusElement.textContent = getStatusText(bill.status);
+            statusElement.className = `bill-status status-${bill.status}`;
+            
+            modal.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

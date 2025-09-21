@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">index
+    <title>我的 - 轻松工作</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        /* 定义CSS变量，便于统一管理和修改主题色 */
+        :root {
+            --primary-color: #ff7e00;
+            --primary-dark: #ff5f00;
+            --background-light: #f8f9fa;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --card-radius: 0.6rem;
+            --button-radius: 0.6rem;
+            --base-spacing: 0.8rem;
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            --button-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25);
+        }
+        
+        /* 全局重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        /* 主体样式 */
+        body {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            padding-bottom: 5rem; /* 为底部导航留出空间 */
+        }
+        
+        /* 顶部区域 - 个人资料 */
+        .profile-header {
+            padding: 1.2rem var(--base-spacing) 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-bottom-left-radius: var(--card-radius);
+            border-bottom-right-radius: var(--card-radius);
+            box-shadow: var(--button-shadow);
+            position: relative;
+        }
+        
+        .profile-top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            justify-content: space-between;
+        }
+        
+        .profile-main {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .profile-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* 用户头像样式 */
+        .avatar {
+            width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--base-spacing);
+            overflow: hidden;
+            border: 0.15rem solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .avatar i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .username {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .user-id {
+            font-size: 0.65rem;
+            opacity: 0.9;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        /* 会员标识样式 */
+        .membership {
+            display: inline-block;
+            background: linear-gradient(to right, #d4af37, #f5d033);
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.7rem;
+            font-size: 0.55rem;
+            font-weight: bold;
+            margin-left: 0.4rem;
+        }
+        
+        /* 提现按钮和编辑资料按钮 */
+        .action-btn {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 0.4rem var(--base-spacing);
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none; /* 确保按钮下方没有下划线 */
+        }
+        
+        .action-btn:hover, .action-btn:focus {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        .action-btn i {
+            margin-right: 0.3rem;
+            font-size: 0.6rem;
+        }
+        
+        /* 余额和收益区域 */
+        .balance-section {
+            background: white;
+            margin: var(--base-spacing);
+            border-radius: var(--card-radius);
+            padding: var(--base-spacing);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .balance-item {
+            text-align: left;
+            flex: 1;
+        }
+        
+        .balance-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+        
+        .balance-value {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        /* 新的提现按钮样式 */
+        .withdraw-btn {
+            position: absolute;
+            right: var(--base-spacing);
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 0.35rem 0.7rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--button-shadow);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none; /* 确保按钮下方没有下划线 */
+        }
+        
+        .withdraw-btn:hover, .withdraw-btn:focus {
+            opacity: 0.9;
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .withdraw-btn i {
+            margin-right: 0.3rem;
+            font-size: 0.6rem;
+        }
+        
+        /* 公告栏 */
+        .announcement-section {
+            background: #fff8e6;
+            margin: var(--base-spacing);
+            border-radius: var(--card-radius);
+            padding: 0.6rem var(--base-spacing);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            border-left: 0.2rem solid var(--warning-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .announcement-section.expanded {
+            align-items: flex-start;
+        }
+        
+        .announcement-section.expanded .announcement-content {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
+        
+        .announcement-icon {
+            color: var(--warning-color);
+            margin-right: 0.5rem;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .announcement-content {
+            flex: 1;
+            font-size: 0.65rem;
+            color: #e65100;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.3s ease;
+        }
+        
+        .announcement-toggle {
+            color: var(--warning-color);
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* 功能按钮区域 */
+        .actions-section {
+            background: white;
+            margin: var(--base-spacing);
+            border-radius: var(--card-radius);
+            padding: var(--base-spacing);
+            box-shadow: var(--card-shadow);
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--base-spacing);
+            margin-bottom: 1.5rem;
+        }
+        
+        .action-btn-large {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.8rem 0.5rem;
+            background: var(--background-light);
+            border-radius: var(--card-radius);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none; /* 确保按钮下方没有下划线 */
+            color: inherit; /* 继承父元素颜色，避免链接默认蓝色 */
+        }
+        
+        .action-btn-large:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .action-btn-large:active:after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(50, 50);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(100, 100);
+            }
+        }
+        
+        .action-btn-large:active {
+            background: #f0f0f0;
+        }
+        
+        .action-icon {
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            background: #fef2e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+        
+        .action-label {
+            font-size: 0.65rem;
+            color: var(--text-primary);
+        }
+        
+        .logout-btn .action-icon {
+            background: #fff0f0;
+            color: var(--error-color);
+        }
+        
+        /* 投诉反馈按钮样式 */
+        .feedback-btn .action-icon {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            transition: all 0.2s ease;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--button-radius);
+            border: 0.08rem solid transparent;
+            text-decoration: none; /* 确保导航项没有下划线 */
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 底部间距占位元素 */
+        .bottom-spacer {
+            height: 1.5rem;
+            width: 100%;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: var(--card-radius);
+            padding: 1.2rem;
+            width: 80%;
+            max-width: 20rem;
+            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 0.05rem solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .service-info {
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        
+        .service-contact {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background-color: var(--background-light);
+            border-radius: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-item i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+            width: 1rem;
+        }
+        
+        /* 确认对话框样式 */
+        .confirm-dialog {
+            text-align: center;
+        }
+        
+        .confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .confirm-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--button-radius);
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .confirm-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: var(--button-shadow);
+        }
+        
+        .confirm-btn.secondary {
+            background: #e0e0e0;
+            color: var(--text-secondary);
+        }
+        
+        .confirm-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        /* 会员权益样式 */
+        .benefits-list {
+            margin-top: 1rem;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        
+        .benefit-icon {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-size: 0.8rem;
+            margin-top: 0.1rem;
+        }
+        
+        .benefit-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 媒体查询适配不同尺⼨设备 */
+        @media (max-width: 320px) {
+            .actions-section {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+            
+            .action-btn-large {
+                padding: 0.6rem 0.4rem;
+            }
+            
+            .action-btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.6rem;
+            }
+            
+            .profile-actions {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+            
+            .withdraw-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.6rem;
+            }
+            
+            .modal-content {
+                width: 90%;
+                padding: 1rem;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .balance-section {
+                padding: 1rem;
+            }
+            
+            .balance-value {
+                font-size: 1.1rem;
+            }
+            
+            .action-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .announcement-section {
+                padding: 0.8rem 1rem;
+            }
+            
+            .announcement-content {
+                font-size: 0.75rem;
+            }
+            
+            .withdraw-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 - 个人资料 -->
+    <div class="profile-header">
+        <div class="profile-top">
+            <div class="profile-main">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <div class="username">
+                        小明同学
+                    </div>
+                    <div class="user-id">ID: 88888888 <span class="membership">黄金会员</span></div>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <!-- 编辑资料按钮 -->
+                <a href="doer-client-profile-edit.html" class="action-btn">
+                    <i class="fas fa-user-edit"></i> 编辑资料
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 余额和收益区域 -->
+    <div class="balance-section">
+        <div class="balance-item">
+            <div class="balance-label">近30日收益</div>
+            <div class="balance-value">¥1256.80</div>
+        </div>
+        <div class="balance-item">
+            <div class="balance-label">我的余额</div>
+            <div class="balance-value">¥328.50</div>
+        </div>
+        <!-- 提现按钮 -->
+        <a href="doer-client-finance-withdraw.html" class="withdraw-btn">
+            <i class="fas fa-wallet"></i> 提现
+        </a>
+    </div>
+    
+    <!-- 公告栏 -->
+    <div class="announcement-section" id="announcement-section">
+        <i class="fas fa-bullhorn announcement-icon"></i>
+        <div class="announcement-content">系统公告：新用户专享福利，首次提现免手续费！完成任务可获得双倍积分，积分可兑换精美礼品。活动时间有限，赶快参与吧！</div>
+        <button class="announcement-toggle" id="announcement-toggle">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    
+    <!-- 功能按钮区域 -->
+    <div class="actions-section">
+        <a href="doer-client-finance-bills.html" class="action-btn-large">
+            <div class="action-icon">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="action-label">账单记录</div>
+        </a>
+        <a href="doer-client-support-feedback.html" class="action-btn-large feedback-btn">
+            <div class="action-icon">
+                <i class="fas fa-comment-alt"></i>
+            </div>
+            <div class="action-label">投诉反馈</div>
+        </a>
+        <div class="action-btn-large" id="customer-service-btn">
+            <div class="action-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <div class="action-label">在线客服</div>
+        </div>
+        <div class="action-btn-large logout-btn" id="logout-btn">
+            <div class="action-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <div class="action-label">退出登录</div>
+        </div>
+    </div>
+    
+    <!-- 底部间距占位元素 -->
+    <div class="bottom-spacer"></div>
+    
+    <!-- 客服信息弹出层 -->
+    <div class="modal" id="customer-service-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">在线客服</div>
+                <button class="close-btn" id="close-service-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="service-info">
+                <p>您好！如有任何问题或需要帮助，请联系我们的客服团队：</p>
+                <div class="service-contact">
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span>客服热线：400-123-4567</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>客服邮箱：service@example.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-qq"></i>
+                        <span>QQ客服：123456789</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>服务时间：9:00-18:00（工作日）</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 退出登录确认对话框 -->
+    <div class="modal" id="logout-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">退出登录</div>
+                <button class="close-btn" id="close-logout-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="service-info confirm-dialog">
+                <p>确定要退出登录吗？</p>
+                <div class="confirm-buttons">
+                    <button class="confirm-btn secondary" id="cancel-logout">取消</button>
+                    <button class="confirm-btn primary" id="confirm-logout">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 功能按钮点击事件处理
+            document.querySelectorAll('.action-btn-large').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const label = this.querySelector('.action-label').textContent;
+                    
+                    // 根据按钮标签执行不同操作
+                    if (label === '在线客服') {
+                        // 显示客服信息弹窗
+                        document.getElementById('customer-service-modal').style.display = 'flex';
+                        return;
+                    }
+                    
+                    if (label === '退出登录') {
+                        // 显示退出登录确认对话框
+                        document.getElementById('logout-modal').style.display = 'flex';
+                        return;
+                    }
+                });
+            });
+            
+            // 关闭客服信息弹窗
+            document.getElementById('close-service-modal').addEventListener('click', function() {
+                document.getElementById('customer-service-modal').style.display = 'none';
+            });
+            
+            // 关闭退出登录确认对话框
+            document.getElementById('close-logout-modal').addEventListener('click', function() {
+                document.getElementById('logout-modal').style.display = 'none';
+            });
+            
+            // 取消退出登录
+            document.getElementById('cancel-logout').addEventListener('click', function() {
+                document.getElementById('logout-modal').style.display = 'none';
+            });
+            
+            // 确认退出登录
+            document.getElementById('confirm-logout').addEventListener('click', function() {
+                alert('退出登录成功');
+                // 在实际应用中，这里应该执行退出登录操作，如清除登录状态、跳转到登录页等
+                document.getElementById('logout-modal').style.display = 'none';
+            });
+            
+            // 点击弹窗外部关闭弹窗
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 公告栏展开/收起功能
+            const announcementSection = document.getElementById('announcement-section');
+            const announcementToggle = document.getElementById('announcement-toggle');
+            
+            // 点击公告栏切换展开/收起状态
+            announcementSection.addEventListener('click', function(e) {
+                if (e.target !== announcementToggle) {
+                    this.classList.toggle('expanded');
+                    const icon = announcementToggle.querySelector('i');
+                    // 切换展开/收起图标
+                    if (this.classList.contains('expanded')) {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    } else {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    }
+                }
+            });
+            
+            // 公告栏切换按钮点击事件
+            announcementToggle.addEventListener('click', function(e) {
+                e.stopPropagation(); // 阻止事件冒泡
+                announcementSection.classList.toggle('expanded');
+                const icon = this.querySelector('i');
+                // 切换展开/收起图标
+                if (announcementSection.classList.contains('expanded')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

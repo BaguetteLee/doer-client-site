@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">index
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>消息中心 - 轻松工作</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px（原为20px，整体缩小）
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            padding-bottom: 3.5rem; /* 为底部导航栏留出空间 */
+        }
+        
+        /* 顶部区域 - 调整圆角为0.6rem */
+        .header {
+            padding: 0.6rem 0.8rem 0.8rem;
+            background: linear-gradient(135deg, #ff7e00, #ff5f00);
+            color: white;
+            border-bottom-left-radius: 0.6rem;
+            border-bottom-right-radius: 0.6rem;
+            box-shadow: 0 0.15rem 0.6rem rgba(255, 111, 0, 0.25);
+            flex-shrink: 0;
+        }
+        
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+            position: relative;
+        }
+        
+        .page-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+            text-shadow: 0 0.08rem 0.15rem rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 选项卡区域 */
+        .tabs-container {
+            background-color: white;
+            padding: 0.6rem;
+            margin: 0.6rem;
+            border-radius: 0.6rem;
+            box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            gap: 0.4rem;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex: 0 0 auto;
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.9rem;
+            background: #f8f9fa;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.7rem;
+        }
+        
+        .tab.active {
+            background: #ff7e00;
+            color: white;
+            box-shadow: 0 0.15rem 0.4rem rgba(255, 126, 0, 0.25);
+        }
+        
+        /* 消息列表 */
+        .messages-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 0.6rem 3.5rem; /* 增加底部内边距，避免被底部导航栏遮挡 */
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .message-list {
+            display: none;
+        }
+        
+        .message-list.active {
+            display: block;
+        }
+        
+        /* 统一消息项样式 */
+        .message-item {
+            background: white;
+            border-radius: 0.6rem;
+            padding: 0.65rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            box-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .message-item:hover {
+            transform: translateY(-0.1rem);
+            box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08);
+        }
+        
+        .message-icon {
+            width: 2.1rem;
+            height: 2.1rem;
+            background: #f0f7ff;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.6rem;
+            color: #3498db;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        
+        .help-icon {
+            background: #fef2e7;
+            color: #ff7e00;
+        }
+        
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-preview {
+            font-size: 0.65rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .message-time {
+            color: #999;
+            font-size: 0.55rem;
+            margin-top: 0.15rem;
+            text-align: right;
+        }
+        
+        .unread-badge {
+            display: inline-block;
+            width: 0.4rem;
+            height: 0.4rem;
+            background-color: #ff5252;
+            border-radius: 50%;
+            margin-left: 0.3rem;
+        }
+        
+        /* 模态窗口 - 调整圆角为0.6rem，阴影统一 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 0.6rem;
+            width: 100%;
+            max-width: 25rem;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(1rem);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            padding-right: 1rem;
+        }
+        
+        .modal-close {
+            color: #999;
+            font-size: 0.9rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .modal-body {
+            padding: 1.2rem;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #444;
+        }
+        
+        .modal-time {
+            color: #999;
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+            text-align: right;
+        }
+        
+        /* 底部导航 - 统一高度为3.5rem */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 3.5rem;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 0.55rem;
+            transition: all 0.2s ease;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: #ff7e00;
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #aaa;
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state p {
+            font-size: 0.7rem;
+        }
+        
+        /* 媒体查询适配不同尺⼨设备 */
+        @media (max-width: 320px) {
+            .message-item {
+                padding: 0.55rem;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .message-item {
+                padding: 0.8rem;
+            }
+            
+            .message-title {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 -->
+    <div class="header">
+        <div class="top-section">
+            <div class="page-title">消息中心</div>
+            <!-- 已移除左上角返回按钮和右上角用户图标 -->
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content">
+        <!-- 选项卡区域 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-target="system">系统通知</div>
+                <div class="tab" data-target="help">帮助中心</div>
+            </div>
+        </div>
+        
+        <!-- 消息列表 - 可滚动区域 -->
+        <div class="messages-scroll-container" id="messagesScrollContainer">
+            <!-- 系统通知 -->
+            <div class="message-list active" id="system">
+                <div class="message-item" data-id="1">
+                    <div class="message-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">系统升级通知 <span class="unread-badge"></span></div>
+                        <div class="message-preview">平台将于本周六凌晨2点-4点进行系统升级，届时可能...</div>
+                        <div class="message-time">今天 09:30</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="2">
+                    <div class="message-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">新用户福利大放送</div>
+                        <div class="message-preview">恭喜您成功注册！点击领取新人专属福利包，内含多...</div>
+                        <div class="message-time">昨天 14:25</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="3">
+                    <div class="message-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">账户安全提醒</div>
+                        <div class="message-preview">检测到您的账户在异地登录，如非本人操作，请立即...</div>
+                        <div class="message-time">周三 11:40</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="4">
+                    <div class="message-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">任务审核结果通知</div>
+                        <div class="message-preview">您提交的"社交媒体推广"任务已审核通过，酬金已发...</div>
+                        <div class="message-time">周一 16:15</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="5">
+                    <div class="message-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">恭喜您获得五星好评！</div>
+                        <div class="message-preview">雇主对您完成的"网站设计"任务给予了高度评价："非...</div>
+                        <div class="message-time">7月12日 09:20</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="6">
+                    <div class="message-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">新功能上线通知</div>
+                        <div class="message-preview">我们很高兴地宣布，平台推出了任务收藏功能，方便您...</div>
+                        <div class="message-time">7月10日 15:45</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="7">
+                    <div class="message-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">重要提示：服务条款更新</div>
+                        <div class="message-preview">我们的服务条款已更新，请抽空阅读最新版本，特别是...</div>
+                        <div class="message-time">7月8日 10:20</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 帮助中心 -->
+            <div class="message-list" id="help">
+                <div class="message-item" data-id="101">
+                    <div class="message-icon help-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">如何提高接单成功率？</div>
+                        <div class="message-preview">提供一些实用技巧，帮助您更快接到心仪的任务...</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="102">
+                    <div class="message-icon help-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">提现流程与时间说明</div>
+                        <div class="message-preview">详细介绍提现操作步骤以及到账时间...</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="103">
+                    <div class="message-icon help-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">账户安全保护指南</div>
+                        <div class="message-preview">如何设置强密码、启用双重验证等安全措施...</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="104">
+                    <div class="message-icon help-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">任务提交规范说明</div>
+                        <div class="message-preview">了解任务提交的标准格式和要求，避免审核不通过...</div>
+                    </div>
+                </div>
+                
+                <div class="message-item" data-id="105">
+                    <div class="message-icon help-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-title">如何与雇主有效沟通？</div>
+                        <div class="message-preview">学习高效沟通技巧，提升合作体验和任务完成质量...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态提示 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-envelope-open"></i>
+                <p>暂无消息</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模态窗口 -->
+    <div class="modal-overlay" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">消息标题</div>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-time" id="modalTime">今天 09:30</div>
+                <div id="modalContent">
+                    <!-- 消息内容将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 - 现在固定在底部 -->
+      <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item active">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+    <script>
+        // 消息数据
+        const messages = {
+            system: [
+                {
+                    id: 1,
+                    title: "系统升级通知",
+                    time: "今天 09:30",
+                    content: "<p>尊敬的用户：</p><p>为了提供更优质的服务，平台将于本周六（8月20日）凌晨2点-4点进行系统升级维护。在此期间，网站和APP将无法访问，请您提前安排好工作。</p><p>升级内容包括：</p><ul><li>服务器性能优化</li><li>任务匹配算法改进</li><li>界面交互体验提升</li></ul><p>升级完成后，系统将恢复正常使用。给您带来的不便，敬请谅解。</p><p>感谢您对平台的支持！</p>",
+                    read: false
+                },
+                {
+                    id: 2,
+                    title: "新用户福利大放送",
+                    time: "昨天 14:25",
+                    content: "<p>欢迎加入轻松工作平台！</p><p>为庆祝您的加入，我们特别准备了新人专属福利包：</p><ul><li><strong>3张任务加成卡</strong> - 完成任务可获得额外10%奖励</li><li><strong>优先接单特权</strong> - 7天内享受高价值任务优先推荐</li><li><strong>专属客服通道</strong> - 快速解决您遇到的问题</li></ul><p>请点击下方按钮立即领取：</p><p style='text-align: center; margin: 1rem 0;'><button style='background: #ff7e00; color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 1.5rem; font-weight: bold;'>领取福利包</button></p><p>祝您在平台接单顺利，收获满满！</p>",
+                    read: true
+                },
+                {
+                    id: 3,
+                    title: "账户安全提醒",
+                    time: "周三 11:40",
+                    content: "<p>安全提示：</p><p>系统检测到您的账户于2023年8月15日 14:32在异地（IP地址：112.65.xx.xx，地理位置：上海）登录。如非本人操作，建议您：</p><ol><li>立即修改登录密码</li><li>检查账户绑定信息</li><li>启用双重身份验证</li></ol><p>您可以在「我的-账户安全」中完成上述操作。</p><p>如确认是本人操作，请忽略此通知。</p><p>为保障账户安全，请勿将密码泄露给他人，定期更换密码。</p>",
+                    read: true
+                },
+                {
+                    id: 4,
+                    title: "任务审核结果通知",
+                    time: "周一 16:15",
+                    content: "<p>恭喜！您提交的\"社交媒体推广\"任务（任务编号：TSK-20230812-0752）已通过审核。</p><p>任务详情：</p><ul><li>任务酬金：¥85.00</li><li>已完成支付：¥72.25（已扣除15%平台服务费）</li><li>支付时间：2023-08-14 16:15:32</li><li>支付方式：支付宝</li></ul><p>酬金已发放至您的账户余额，您可以随时申请提现。</p><p>雇主对您的完成情况表示满意，并给予了4.8星好评：\"内容创意很好，传播效果超出预期\"。</p><p>继续努力，获得更多好评将提升您的接单优先级！</p>",
+                    read: true
+                },
+                {
+                    id: 5,
+                    title: "恭喜您获得五星好评！",
+                    time: "7月12日 09:20",
+                    content: "<p>好消息！雇主对您完成的\"企业官网设计\"任务给予了五星满分评价！</p><p>评价内容：\"设计师非常专业，沟通顺畅，理解需求准确，成品效果超出预期。交付准时，还会再次合作！\"</p><p>您的综合评分已提升至4.9星，这将有助于：</p><ul><li>获得更多高价值任务推荐</li><li>提高任务申请通过率</li><li>建立长期合作机会</li></ul><p>继续保持优质服务，积累更多好评！</p><p>您可以在「我的-评价」中查看完整评价内容。</p>",
+                    read: true
+                },
+                {
+                    id: 6,
+                    title: "新功能上线通知",
+                    time: "7月10日 15:45",
+                    content: "<p>亲爱的用户：</p><p>我们很高兴地宣布，平台推出了全新「任务收藏」功能！</p><p>现在您可以：</p><ul><li>收藏感兴趣的任务，稍后申请</li><li>创建个人任务清单，提高工作效率</li><li>接收收藏任务的更新通知</li></ul><p>如何使用：</p><ol><li>在任务详情页点击心形收藏图标</li><li>在「我的-收藏任务」中查看所有收藏</li><li>一键申请收藏的任务</li></ol><p>希望这个新功能能帮助您更高效地管理工作机会！</p>",
+                    read: true
+                },
+                {
+                    id: 7,
+                    title: "重要提示：服务条款更新",
+                    time: "7月8日 10:20",
+                    content: "<p>尊敬的用户：</p><p>我们已更新平台的服务条款和隐私政策，这些更新将于2023年8月1日正式生效。</p><p>主要变更包括：</p><ul><li>明确了任务酬金结算规则</li><li>更新了争议处理流程</li><li>加强了用户数据保护措施</li><li>完善了知识产权条款</li></ul><p>请您抽空阅读完整版的<a href='#' style='color: #ff7e00;'>服务条款</a>和<a href='#' style='color: #ff7e00;'>隐私政策</a>。</p><p>如果您继续使用我们的服务，即表示您接受更新后的条款。</p><p>如有任何疑问，请联系客服咨询。</p>",
+                    read: true
+                }
+            ],
+            help: [
+                {
+                    id: 101,
+                    title: "如何提高接单成功率？",
+                    content: "<p>提高接单成功率的实用技巧：</p><ol><li><strong>完善个人资料</strong> - 上传专业头像，填写详细技能介绍和工作经历，添加作品集</li><li><strong>针对性申请</strong> - 只申请与您技能匹配的任务，避免广撒网</li><li><strong>撰写个性化申请</strong> - 针对每个任务写专属申请信，说明您的优势和解决方案</li><li><strong合理定价</strong> - 初期可适当降低报价积累好评，后期逐步提高</li><li><strong>快速响应</strong> - 及时回复雇主咨询，显示您的专业性和可靠性</li><li><strong>积累好评</strong> - 认真完成每个任务，争取获得五星评价</li></ol><p>遵循以上建议，您的接单成功率将显著提升！</p>"
+                },
+                {
+                    id: 102,
+                    title: "提现流程与时间说明",
+                    content: "<p><strong>提现操作流程：</strong></p><ol><li>进入「我的」页面，点击「账户余额」</li><li>选择「提现」功能</li><li>输入提现金额（最低提现额：¥10）</li><li>选择提现方式（支付宝/微信/银行卡）</li><li>确认提现信息并提交申请</li></ol><p><strong>到账时间说明：</strong></p><ul><li><strong>支付宝/微信</strong>：通常1-2小时内到账，最快5分钟</li><li><strong>银行卡</strong>：1-3个工作日到账（周末顺延）</li></ul><p><strong>注意事项：</strong></p><ul><li>每日提现上限为¥5000</li><li>提现无需手续费</li><li>如遇节假日，到账时间可能延迟</li></ul>"
+                },
+                {
+                    id: 103,
+                    title: "账户安全保护指南",
+                    content: "<p>保护账户安全的重要措施：</p><ol><li><strong>设置强密码</strong> - 使用字母、数字和特殊符号组合，长度至少8位</li><li><strong>启用双重验证</strong> - 在「账户安全」中开启手机或邮箱验证</li><li><strong>警惕钓鱼链接</strong> - 不要点击可疑链接，平台官方链接均以easywork.com开头</li><li><strong>定期检查登录设备</strong> - 在「账户安全」中查看最近登录记录，发现异常立即修改密码</li><li><strong>绑定安全联系方式</strong> - 确保手机和邮箱为本人使用且可及时接收验证码</li></ol><p><strong>如果发现账户异常：</strong></p><ol><li>立即修改密码</li><li>检查账户余额和任务记录</li><li>联系客服冻结账户</li><li>提交问题反馈</li></ol>"
+                },
+                {
+                    id: 104,
+                    title: "任务提交规范说明",
+                    content: "<p>为确保任务审核顺利通过，请遵循以下提交规范：</p><p><strong>通用要求：</strong></p><ul><li>在任务截止时间前提交</li><li>确保内容为原创，无抄袭或侵权问题</li><li>符合任务描述中的具体要求</li></ul><p><strong>文件类任务：</strong></p><ul><li>使用要求的文件格式（如DOCX、PDF、PSD等）</li><li>命名规范：任务编号-任务名称-您的ID（如：TSK-20230812-0752-社交媒体推广-U12345）</li><li>如有多文件，请打包为ZIP格式提交</li></ul><p><strong>设计类任务：</strong></p><ul><li>提供适当分辨率的文件（通常72-300DPI）</li><li>附上设计说明文档</li><li>如需要，提供源文件</li></ul><p><strong>代码类任务：</strong></p><ul><li>提供清晰注释的代码</li><li>附上运行环境说明和部署指南</li><li>进行基本测试确保无重大错误</li></ul>"
+                },
+                {
+                    id: 105,
+                    title: "如何与雇主有效沟通？",
+                    content: "<p>与雇主高效沟通的技巧：</p><p><strong>沟通前准备：</strong></p><ol><li>仔细阅读任务要求，明确雇主需求</li><li>准备相关问题清单，避免多次打扰</li><li>查看雇主历史评价，了解其偏好</li></ol><p><strong>沟通中技巧：</strong></p><ol><li>使用礼貌专业的语言，避免网络俚语</li><li>及时回复消息（最好在2小时内）</li><li>主动汇报进度，让雇主放心</li><li>遇到问题提前沟通，不要等到截止时间</li><li>明确讨论关键点：需求细节、交付标准、修改政策</li></ol><p><strong>沟通后跟进：</strong></p><ol><li>任务完成后询问反馈</li><li>礼貌请求雇主给予评价</li><li>表达继续合作的意愿</li></ol><p>良好沟通是成功合作的基础，也能帮助您获得更多好评和回头客！</p>"
+                }
+            ]
+        };
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 选项卡切换功能
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有active类
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // 添加active类到当前选项卡
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-target');
+                    
+                    // 隐藏所有消息列表
+                    document.querySelectorAll('.message-list').forEach(list => {
+                        list.classList.remove('active');
+                    });
+                    
+                    // 显示当前消息列表
+                    document.getElementById(target).classList.add('active');
+                    
+                    // 检查是否有消息
+                    checkEmptyState();
+                });
+            });
+            
+            // 消息项点击事件
+            document.querySelectorAll('.message-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const category = this.closest('.message-list').id;
+                    showMessageDetail(id, category);
+                    
+                    // 标记为已读
+                    this.querySelector('.unread-badge')?.remove();
+                });
+            });
+            
+            // 关闭模态窗口
+            document.getElementById('modalClose').addEventListener('click', function() {
+                document.getElementById('messageModal').classList.remove('active');
+            });
+            
+            // 点击模态窗口外部关闭
+            document.getElementById('messageModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+            
+            // 初始化检查空状态
+            checkEmptyState();
+        });
+        
+        // 显示消息详情
+        function showMessageDetail(id, category) {
+            const messageData = messages[category].find(msg => msg.id === parseInt(id));
+            
+            if (messageData) {
+                document.getElementById('modalTitle').textContent = messageData.title;
+                document.getElementById('modalContent').innerHTML = messageData.content;
+                
+                if (messageData.time) {
+                    document.getElementById('modalTime').textContent = messageData.time;
+                    document.getElementById('modalTime').style.display = 'block';
+                } else {
+                    document.getElementById('modalTime').style.display = 'none';
+                }
+                
+                document.getElementById('messageModal').classList.add('active');
+            }
+        }
+        
+        // 检查空状态
+        function checkEmptyState() {
+            const activeList = document.querySelector('.message-list.active');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (activeList.children.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

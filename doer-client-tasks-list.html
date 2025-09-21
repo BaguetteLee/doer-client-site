@@ -1,0 +1,981 @@
+index<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务 - 我的订单</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            // 判断设备是横屏还是竖屏
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            
+            // 重新计算字体大小的函数
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                
+                // 以375px设计稿为基准，设置1rem=18px（原为20px，整体缩小）
+                // 这样可以在不同尺寸的设备上实现响应式布局
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            
+            if (!document.addEventListener) return;
+            
+            // 添加窗口大小变化事件监听
+            window.addEventListener(resizeEvt, recalc, false);
+            // 添加DOM加载完成事件监听
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        /* CSS变量定义，方便统一管理和修改 */
+        :root {
+            --primary-color: #ff7e00;           /* 主色调 - 橙色 */
+            --primary-dark: #ff5f00;            /* 深色主色调 */
+            --background-light: #f8f9fa;        /* 背景浅色 */
+            --success-color: #4caf50;           /* 成功状态颜色 */
+            --warning-color: #ff9800;           /* 警告状态颜色 */
+            --error-color: #f44336;             /* 错误状态颜色 */
+            --text-primary: #333;               /* 主要文本颜色 */
+            --text-secondary: #666;             /* 次要文本颜色 */
+            --text-muted: #999;                 /* 弱化文本颜色 */
+            --border-radius: 0.6rem;            /* 统一圆角大小 */
+            --spacing: 0.8rem;                  /* 统一间距 */
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04); /* 卡片阴影 */
+            --button-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25); /* 按钮阴影 */
+        }
+        
+        /* 全局重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;             /* 盒模型设置为边框盒 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 统一字体 */
+            -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
+        }
+        
+        /* 设置html和body高度为100% */
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        /* 主体样式 */
+        body {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+            min-height: 100vh;                  /* 最小高度为视口高度 */
+            display: flex;
+            flex-direction: column;             /* 垂直排列 */
+            font-size: 0.75rem;                 /* 基础字体大小 */
+            line-height: 1.4;                   /* 行高 */
+            padding-bottom: 3rem;               /* 底部内边距，为底部导航留空间 */
+        }
+        
+        /* 顶部区域样式 */
+        .header {
+            padding: 0.6rem var(--spacing) 0.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); /* 渐变背景 */
+            color: white;
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+            box-shadow: 0 0.15rem 0.6rem rgba(255, 111, 0, 0.25); /* 阴影效果 */
+            flex-shrink: 0;                     /* 防止顶部区域被压缩 */
+        }
+        
+        /* 顶部区域布局 */
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;     /* 两端对齐 */
+            margin-bottom: 0.6rem;
+        }
+        
+        /* 返回按钮样式 - 已取消显示 */
+        .back-button {
+            display: none;                      /* 取消显示返回按钮 */
+        }
+        
+        /* 页面标题样式 */
+        .page-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: 0 0.08rem 0.15rem rgba(0, 0, 0, 0.1); /* 文字阴影 */
+        }
+        
+        /* 用户图标样式 */
+        .user-icon {
+            color: white;
+            font-size: 1rem;
+            width: 1.8rem;
+            height: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            visibility: hidden;                 /* 隐藏用户图标 */
+        }
+        
+        /* 搜索容器样式 */
+        .search-container {
+            padding: 0 0.5rem;
+        }
+        
+        /* 搜索框样式 */
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 1.1rem;              /* 圆形边框 */
+            padding: 0.45rem 0.8rem;
+            align-items: center;
+            width: 100%;
+            box-shadow: var(--card-shadow);     /* 使用卡片阴影变量 */
+            transition: all 0.3s ease;          /* 添加过渡效果 */
+        }
+        
+        /* 搜索框获得焦点时的样式 */
+        .search-box:focus-within {
+            transform: translateY(-0.05rem);    /* 轻微上移 */
+            box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.2); /* 增强阴影 */
+        }
+        
+        /* 搜索框输入区域样式 */
+        .search-box input {
+            flex: 1;                            /* 占据剩余空间 */
+            border: none;
+            background: transparent;
+            padding: 0.25rem;
+            font-size: 0.7rem;
+            outline: none;                      /* 移除轮廓线 */
+            color: var(--text-secondary);
+            min-width: 0;
+        }
+        
+        /* 搜索图标样式 */
+        .search-box i {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+        
+        /* 内容区域样式 */
+        .content {
+            flex: 1;                            /* 占据剩余空间 */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 选项卡容器样式 */
+        .tabs-container {
+            background-color: white;
+            padding: var(--spacing);
+            margin: var(--spacing);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            flex-shrink: 0;                     /* 防止被压缩 */
+        }
+        
+        /* 选项卡样式 */
+        .tabs {
+            display: flex;
+            overflow-x: auto;                   /* 水平滚动 */
+            scrollbar-width: none;              /* 隐藏滚动条 - Firefox */
+            gap: 0.4rem;                        /* 选项卡间距 */
+        }
+        
+        /* 隐藏Webkit浏览器的滚动条 */
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* 单个选项卡样式 */
+        .tab {
+            flex: 1;                            /* 平均分配空间 */
+            padding: 0.4rem 0.5rem;
+            border-radius: 0.9rem;
+            background: var(--background-light);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;          /* 过渡效果 */
+            white-space: nowrap;                /* 不换行 */
+            font-size: 0.7rem;
+            text-align: center;
+        }
+        
+        /* 活动选项卡样式 */
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--button-shadow);   /* 按钮阴影效果 */
+        }
+        
+        /* 订单列表滚动容器样式 */
+        .orders-scroll-container {
+            flex: 1;                            /* 占据剩余空间 */
+            overflow-y: auto;                   /* 垂直滚动 */
+            padding: 0 var(--spacing) var(--spacing);
+            -webkit-overflow-scrolling: touch;  /* 移动端平滑滚动 */
+        }
+        
+        /* 订单列表默认隐藏 */
+        .order-list {
+            display: none;
+        }
+        
+        /* 活动订单列表显示 */
+        .order-list.active {
+            display: block;
+        }
+        
+        /* 订单项样式 */
+        .order-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 0.65rem;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;          /* 过渡效果 */
+            position: relative;
+        }
+        
+        /* 订单项悬停效果 */
+        .order-item:hover {
+            transform: translateY(-0.1rem);     /* 轻微上移 */
+            box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08); /* 增强阴影 */
+        }
+        
+        /* 订单头部样式 */
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.3rem;
+        }
+        
+        /* 订单分类样式 */
+        .order-category {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 订单分类图标样式 */
+        .order-category i {
+            margin-right: 0.3rem;
+            font-size: 0.55rem;
+            width: 0.7rem;
+        }
+        
+        /* 订单状态通用样式 */
+        .order-status {
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.4rem;
+            font-size: 0.55rem;
+            font-weight: 500;
+            margin-left: 0.4rem;
+        }
+        
+        /* 进行中状态样式 */
+        .status-in-progress {
+            background-color: #fff3e0;
+            color: var(--warning-color);
+        }
+        
+        /* 审核中状态样式 */
+        .status-review {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        /* 已驳回状态样式 */
+        .status-rejected {
+            background-color: #ffebee;
+            color: var(--error-color);
+        }
+        
+        /* 已完成状态样式 */
+        .status-completed {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+        
+        /* 订单赏金样式 */
+        .order-reward {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        /* 赏金标签样式 */
+        .reward-label {
+            font-size: 0.6rem;
+            font-weight: bold;
+            margin-bottom: 0.1rem;
+        }
+        
+        /* 删除线样式（用于被驳回订单的赏金） */
+        .reward-strikethrough {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        
+        /* 订单名称样式 */
+        .order-name {
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+            white-space: nowrap;                /* 不换行 */
+            overflow: hidden;
+            text-overflow: ellipsis;            /* 超出显示省略号 */
+        }
+        
+        /* 订单ID样式 */
+        .order-id {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+        
+        /* 订单详情容器样式 */
+        .order-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;                        /* 子项间距 */
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+        }
+        
+        /* 订单详情项样式 */
+        .order-detail {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 订单详情图标样式 */
+        .order-detail i {
+            margin-right: 0.15rem;
+            font-size: 0.55rem;
+            width: 0.7rem;
+        }
+        
+        /* 倒计时样式 */
+        .countdown {
+            color: #ff5722;
+            font-weight: 600;
+        }
+        
+        /* 驳回原因样式 */
+        .rejection-reason {
+            background-color: #fff8e1;
+            padding: 0.4rem;
+            border-radius: 0.3rem;
+            margin-top: 0.4rem;
+            font-size: 0.6rem;
+            color: var(--warning-color);
+        }
+        
+        /* 完成提示样式 */
+        .completed-hint {
+            background-color: #e8f5e9;
+            padding: 0.4rem;
+            border-radius: 0.3rem;
+            margin-top: 0.4rem;
+            font-size: 0.6rem;
+            color: var(--success-color);
+        }
+        
+        /* 审核提示样式 */
+        .review-hint {
+            background-color: #e3f2fd;
+            padding: 0.4rem;
+            border-radius: 0.3rem;
+            margin-top: 0.4rem;
+            font-size: 0.6rem;
+            color: #1976d2;
+        }
+        
+        /* 提交按钮容器样式 */
+        .submit-btn-container {
+            display: flex;
+            justify-content: flex-end;          /* 右对齐 */
+            margin-top: 0.5rem;
+        }
+        
+        /* 各种按钮的通用样式 */
+        .submit-btn, .detail-btn, .reject-detail-btn, .complete-detail-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); /* 渐变背景 */
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--border-radius);
+            font-size: 0.65rem;
+            cursor: pointer;
+            box-shadow: var(--button-shadow);   /* 按钮阴影 */
+            transition: all 0.3s ease;          /* 过渡效果 */
+        }
+        
+        /* 按钮激活状态样式 */
+        .submit-btn:active, .detail-btn:active, .reject-detail-btn:active, .complete-detail-btn:active {
+            transform: translateY(0.1rem);      /* 按下效果 */
+            box-shadow: 0 0.05rem 0.2rem rgba(0, 0, 0, 0.2); /* 阴影减小 */
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;      /* 均匀分布 */
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03); /* 顶部阴影 */
+            z-index: 1000;                      /* 确保在最上层 */
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            flex-shrink: 0;
+            position: fixed;                    /* 固定定位 */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        /* 导航项样式 */
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            transition: all 0.2s ease;          /* 过渡效果 */
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 0.08rem solid transparent;
+            text-decoration: none;              /* 移除下划线 */
+        }
+        
+        /* 活动导航项样式 */
+        .nav-item.active {
+            color: var(--primary-color);
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);     /* 轻微上移 */
+        }
+        
+        /* 导航图标样式 */
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 空状态样式（无订单时显示） */
+        .empty-state {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+        }
+        
+        /* 空状态图标样式 */
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #ddd;
+        }
+        
+        /* 媒体查询 - 小屏幕设备适配 */
+        @media (max-width: 320px) {
+            .search-box {
+                padding: 0.4rem 0.7rem;        /* 调整内边距 */
+            }
+            
+            .tabs {
+                gap: 0.2rem;                   /* 减小选项卡间距 */
+            }
+            
+            .tab {
+                padding: 0.35rem 0.4rem;       /* 调整选项卡内边距 */
+                font-size: 0.65rem;            /* 减小字体大小 */
+            }
+        }
+        
+        /* 媒体查询 - 中等屏幕设备适配 */
+        @media (min-width: 414px) and (max-width: 500px) {
+            .order-name {
+                font-size: 0.8rem;             /* 增大订单名称字体 */
+            }
+        }
+        
+        /* 媒体查询 - 大屏幕设备适配 */
+        @media (min-width: 500px) {
+            .order-item {
+                padding: 0.8rem;               /* 增大内边距 */
+            }
+            
+            .order-name {
+                font-size: 0.85rem;            /* 增大订单名称字体 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 -->
+    <div class="header">
+        <div class="top-section">
+            <!-- 返回按钮 - 已取消显示 -->
+            <div class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="page-title">我的任务</div>
+            <!-- 用户图标 - 当前隐藏 -->
+            <div class="user-icon">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" placeholder="搜索订单..." id="searchInput">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content">
+        <!-- 选项卡区域 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <!-- 选项卡项，data-target属性对应下方订单列表的id -->
+                <div class="tab active" data-target="in-progress">进行中</div>
+                <div class="tab" data-target="under-review">审核中</div>
+                <div class="tab" data-target="rejected">被驳回</div>
+                <div class="tab" data-target="completed">已完成</div>
+            </div>
+        </div>
+        
+        <!-- 订单列表 - 可滚动区域 -->
+        <div class="orders-scroll-container" id="ordersScrollContainer">
+            <!-- 进行中订单列表 -->
+            <div class="order-list active" id="in-progress">
+                <!-- 订单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 审核中订单列表 -->
+            <div class="order-list" id="under-review">
+                <!-- 订单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 被驳回订单列表 -->
+            <div class="order-list" id="rejected">
+                <!-- 订单项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 已完成订单列表 -->
+            <div class="order-list" id="completed">
+                <!-- 订单项将通过JavaScript动态添加 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item active">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+    <script>
+        // 订单数据 - 更新截止时间为2025年8月25日左右
+        const orders = {
+            // 进行中订单数据
+            'in-progress': [
+                { 
+                    id: 'TSK-20250820-001',
+                    category: '线上任务', 
+                    icon: 'fa-laptop',
+                    name: '网站用户体验测试', 
+                    reward: 15, 
+                    claimTime: '2025-08-20 10:30', 
+                    deadline: '2025-08-25 18:00',
+                    status: '进行中',
+                    description: '测试目标网站的用户界面和体验，提供改进建议。',
+                    requirements: '需要完成至少10个测试场景，每个场景提供详细反馈和截图。',
+                    contact: '技术支持: tech-support@example.com'
+                },
+                { 
+                    id: 'TSK-20250821-002',
+                    category: '数据录入', 
+                    icon: 'fa-keyboard',
+                    name: '商品信息录入', 
+                    reward: 8, 
+                    claimTime: '2025-08-21 14:20', 
+                    deadline: '2025-08-24 12:00',
+                    status: '进行中',
+                    description: '将商品信息录入到系统中，确保数据准确无误。',
+                    requirements: '需要录入100条商品信息，每条信息包含名称、价格、描述和图片。',
+                    contact: '数据管理: data-manager@example.com'
+                },
+                { 
+                    id: 'TSK-20250819-003',
+                    category: '平面设计', 
+                    icon: 'fa-palette',
+                    name: '社交媒体海报设计', 
+                    reward: 50, 
+                    claimTime: '2025-08-19 09:15', 
+                    deadline: '2025-08-23 23:59',
+                    status: '进行中',
+                    description: '设计一套社交媒体宣传海报，用于产品推广。',
+                    requirements: '需要设计3款不同尺寸的海报(1080x1080, 1200x628, 1080x1920)，提供源文件。',
+                    contact: '设计主管: design-lead@example.com'
+                }
+            ],
+            // 审核中订单数据
+            'under-review': [
+                { 
+                    id: 'TSK-20250822-004',
+                    category: '市场调研', 
+                    icon: 'fa-chart-line',
+                    name: '消费者偏好调查', 
+                    reward: 20, 
+                    submitTime: '2025-08-22 16:45',
+                    status: '审核中',
+                    description: '调查目标消费者群体的产品偏好和购买习惯。',
+                    requirements: '需要收集至少200份有效问卷，并提供数据分析报告。',
+                    contact: '市场研究: market-research@example.com'
+                },
+                { 
+                    id: 'TSK-20250821-005',
+                    category: '内容创作', 
+                    icon: 'fa-pencil-alt',
+                    name: '产品使用体验文章', 
+                    reward: 35, 
+                    submitTime: '2025-08-21 21:30',
+                    status: '审核中',
+                    description: '撰写一篇关于产品使用体验的文章，分享真实感受。',
+                    requirements: '文章字数不少于1500字，包含至少5张产品使用图片。',
+                    contact: '内容编辑: content-editor@example.com'
+                }
+            ],
+            // 被驳回订单数据
+            'rejected': [
+                { 
+                    id: 'TSK-20250815-006',
+                    category: 'APP测试', 
+                    icon: 'fa-mobile-alt',
+                    name: '购物应用功能测试', 
+                    reward: 12, 
+                    submitTime: '2025-08-15 11:20', 
+                    rejectTime: '2025-08-17 09:45',
+                    reason: '测试步骤不完整，缺少关键环节的截图证明',
+                    description: '测试购物应用的核心功能，包括浏览商品、加入购物车和支付流程。',
+                    requirements: '需要测试所有主要功能并提供详细的错误报告和截图。',
+                    contact: 'QA团队: qa-team@example.com'
+                },
+                { 
+                    id: 'TSK-20250810-007',
+                    category: '翻译任务', 
+                    icon: 'fa-language',
+                    name: '产品说明书英译中', 
+                    reward: 45, 
+                    submitTime: '2025-08-10 15:40', 
+                    rejectTime: '2025-08-12 14:15',
+                    reason: '专业术语翻译不准确，有多处语法错误',
+                    description: '将产品说明书从英文翻译成中文，确保专业术语准确。',
+                    requirements: '翻译需要准确无误，专业术语统一，语法正确。',
+                    contact: '翻译审核: translation-review@example.com'
+                }
+            ],
+            // 已完成订单数据
+            'completed': [
+                { 
+                    id: 'TSK-20250813-008',
+                    category: '线上问卷', 
+                    icon: 'fa-clipboard-list',
+                    name: '健康生活方式调研', 
+                    reward: 10, 
+                    submitTime: '2025-08-13 13:25', 
+                    reviewTime: '2025-08-15 10:30',
+                    status: '已完成',
+                    description: '参与健康生活方式问卷调查，分享个人习惯和看法。',
+                    requirements: '需要完整回答问卷中的所有问题，提交有效回答。',
+                    contact: '调研团队: survey-team@example.com'
+                },
+                { 
+                    id: 'TSK-20250808-009',
+                    category: '短视频制作', 
+                    icon: 'fa-video',
+                    name: '产品宣传短视频', 
+                    reward: 80, 
+                    submitTime: '2025-08-08 17:50', 
+                    reviewTime: '2025-08-10 14:15',
+                    status: '已完成',
+                    description: '制作一个60秒的产品宣传短视频，突出产品特点。',
+                    requirements: '视频需要高清画质，有配音或字幕，时长60±5秒。',
+                    contact: '视频审核: video-review@example.com'
+                }
+            ]
+        };
+
+        // 当前显示的订单分类
+        let currentCategory = 'in-progress';
+        // 搜索关键词
+        let searchKeyword = '';
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化订单列表
+            renderOrders();
+            
+            // 选项卡切换功能
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有active类
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // 添加active类到当前选项卡
+                    tab.classList.add('active');
+                    currentCategory = tab.getAttribute('data-target');
+                    renderOrders();
+                });
+            });
+            
+            // 搜索功能
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                searchKeyword = e.target.value.trim().toLowerCase();
+                renderOrders();
+            });
+            
+            // 为所有按钮添加点击事件监听
+            document.addEventListener('click', function(e) {
+                // 处理提交任务按钮点击
+                if (e.target.classList.contains('submit-btn')) {
+                    const orderItem = e.target.closest('.order-item');
+                    const orderId = orderItem.dataset.orderId;
+                    // 跳转到任务提交页面，传递订单ID
+                    window.location.href = `doer-client-tasks-submission.html?id=${orderId}`;
+                }
+                
+                // 处理查看详情按钮点击
+                if (e.target.classList.contains('detail-btn') || 
+                    e.target.classList.contains('reject-detail-btn') || 
+                    e.target.classList.contains('complete-detail-btn')) {
+                    const orderItem = e.target.closest('.order-item');
+                    const orderId = orderItem.dataset.orderId;
+                    // 获取订单状态（根据当前激活的选项卡）
+                    let statusParam = '';
+                    switch(currentCategory) {
+                        case 'under-review':
+                            statusParam = 'under-review';
+                            break;
+                        case 'rejected':
+                            statusParam = 'rejected';
+                            break;
+                        case 'completed':
+                            statusParam = 'completed';
+                            break;
+                        default:
+                            statusParam = 'under-review';
+                    }
+                    // 跳转到任务详情页面，传递订单ID和状态
+                    window.location.href = `doer-client-tasks-detail.html?id=${orderId}&status=${statusParam}`;
+                }
+            });
+        });
+
+        // 格式化日期时间显示
+        function formatDateTime(dateTimeStr) {
+            const date = new Date(dateTimeStr);
+            return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
+        }
+
+        // 数字补零
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // 计算剩余时间
+        function calculateTimeLeft(deadline) {
+            const now = new Date();
+            const end = new Date(deadline);
+            const timeLeft = end - now;
+            
+            if (timeLeft <= 0) {
+                return '任务已结束';
+            }
+            
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${days}天${hours}小时${minutes}分钟`;
+        }
+
+        // 渲染订单列表
+        function renderOrders() {
+            const orderList = document.getElementById(currentCategory);
+            if (!orderList) return;
+            
+            // 隐藏所有订单列表
+            document.querySelectorAll('.order-list').forEach(list => {
+                list.classList.remove('active');
+            });
+            
+            // 显示当前订单列表
+            orderList.classList.add('active');
+            
+            // 清空当前订单列表
+            orderList.innerHTML = '';
+            
+            // 获取当前分类的订单
+            let categoryOrders = orders[currentCategory] || [];
+            
+            // 应用搜索过滤
+            if (searchKeyword) {
+                categoryOrders = categoryOrders.filter(order => 
+                    order.name.toLowerCase().includes(searchKeyword) || 
+                    order.id.toLowerCase().includes(searchKeyword) ||
+                    order.category.toLowerCase().includes(searchKeyword)
+                );
+            }
+            
+            // 添加订单项
+            categoryOrders.forEach(order => {
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.dataset.orderId = order.id; // 存储订单ID，便于后续操作
+                
+                if (currentCategory === 'in-progress') {
+                    // 计算剩余时间
+                    const timeLeft = calculateTimeLeft(order.deadline);
+                    
+                    orderItem.innerHTML = `
+                        <div class="order-header">
+                            <div class="order-category">
+                                <i class="fas ${order.icon}"></i>${order.category}
+                                <span class="order-status status-in-progress">${order.status}</span>
+                            </div>
+                            <div class="order-reward">
+                                <span class="reward-label">赏金</span>
+                                <span>¥${order.reward}</span>
+                            </div>
+                        </div>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-id">订单ID: ${order.id}</div>
+                        <div class="order-details">
+                            <div class="order-detail"><i class="fas fa-calendar-check"></i>领取: ${formatDateTime(order.claimTime)}</div>
+                            <div class="order-detail"><i class="fas fa-hourglass-end"></i>截止: ${formatDateTime(order.deadline)}</div>
+                            <div class="order-detail"><i class="fas fa-clock"></i>剩余: <span class="countdown">${timeLeft}</span></div>
+                        </div>
+                        <div class="submit-btn-container">
+                            <button class="submit-btn">提交任务</button>
+                        </div>
+                    `;
+                } else if (currentCategory === 'under-review') {
+                    orderItem.innerHTML = `
+                        <div class="order-header">
+                            <div class="order-category">
+                                <i class="fas ${order.icon}"></i>${order.category}
+                                <span class="order-status status-review">${order.status}</span>
+                            </div>
+                            <div class="order-reward">
+                                <span class="reward-label">赏金</span>
+                                <span>¥${order.reward}</span>
+                            </div>
+                        </div>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-id">订单ID: ${order.id}</div>
+                        <div class="order-details">
+                            <div class="order-detail"><i class="fas fa-paper-plane"></i>提交: ${formatDateTime(order.submitTime)}</div>
+                        </div>
+                        <div class="review-hint">
+                            <i class="fas fa-hourglass-half"></i> 订单正在审核中，请耐心等待...
+                        </div>
+                        <div class="submit-btn-container">
+                            <button class="detail-btn">查看详情</button>
+                        </div>
+                    `;
+                } else if (currentCategory === 'rejected') {
+                    orderItem.innerHTML = `
+                        <div class="order-header">
+                            <div class="order-category">
+                                <i class="fas ${order.icon}"></i>${order.category}
+                                <span class="order-status status-rejected">已驳回</span>
+                            </div>
+                            <div class="order-reward">
+                                <span class="reward-label">赏金</span>
+                                <span class="reward-strikethrough">¥${order.reward}</span>
+                            </div>
+                        </div>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-id">订单ID: ${order.id}</div>
+                        <div class="order-details">
+                            <div class="order-detail"><i class="fas fa-paper-plane"></i>提交: ${formatDateTime(order.submitTime)}</div>
+                            <div class="order-detail"><i class="fas fa-times-circle"></i>驳回: ${formatDateTime(order.rejectTime)}</div>
+                        </div>
+                        <div class="rejection-reason">
+                            <i class="fas fa-exclamation-circle"></i> 驳回原因: ${order.reason}
+                        </div>
+                        <div class="submit-btn-container">
+                            <button class="reject-detail-btn">查看详情</button>
+                        </div>
+                    `;
+                } else if (currentCategory === 'completed') {
+                    orderItem.innerHTML = `
+                        <div class="order-header">
+                            <div class="order-category">
+                                <i class="fas ${order.icon}"></i>${order.category}
+                                <span class="order-status status-completed">${order.status}</span>
+                            </div>
+                            <div class="order-reward">
+                                <span class="reward-label">赏金</span>
+                                <span>¥${order.reward}</span>
+                            </div>
+                        </div>
+                        <div class="order-name">${order.name}</div>
+                        <div class="order-id">订单ID: ${order.id}</div>
+                        <div class="order-details">
+                            <div class="order-detail"><i class="fas fa-paper-plane"></i>提交: ${formatDateTime(order.submitTime)}</div>
+                            <div class="order-detail"><i class="fas fa-check-circle"></i>审核: ${formatDateTime(order.reviewTime)}</div>
+                        </div>
+                        <div class="completed-hint">
+                            <i class="fas fa-check-circle"></i> 赏金已入账，随时可提现
+                        </div>
+                        <div class="submit-btn-container">
+                            <button class="complete-detail-btn">查看详情</button>
+                        </div>
+                    `;
+                }
+                
+                orderList.appendChild(orderItem);
+            });
+            
+            // 如果没有订单，显示提示信息
+            if (categoryOrders.length === 0) {
+                orderList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <div>${searchKeyword ? '没有找到相关订单' : '暂无订单'}</div>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

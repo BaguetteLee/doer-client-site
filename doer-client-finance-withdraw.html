@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>提现 - 轻松工作</title>index
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        :root {
+            /* 颜色变量 */
+            --primary-color: #ff7e00;
+            --primary-dark: #ff5f00;
+            --light-bg: #f8f9fa;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            
+            /* 尺寸变量 */
+            --base-font: 0.75rem;
+            --card-radius: 0.6rem;
+            --btn-radius: 0.6rem;
+            --spacing: 0.8rem;
+            --nav-height: 3.5rem;
+            
+            /* 组件变量 */
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            --btn-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25);
+            --input-border: 1px solid #e0e0e0;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: var(--base-font);
+            line-height: 1.4;
+            padding-bottom: 6rem;
+        }
+        
+        /* 顶部导航 */
+        .top-nav {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: var(--spacing);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--btn-shadow);
+            height: var(--nav-height);
+        }
+        
+        .nav-back {
+            font-size: 1rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .nav-placeholder {
+            width: 1.5rem;
+        }
+        
+        /* 主要内容区 */
+        .container {
+            flex: 1;
+            padding: var(--spacing);
+            padding-bottom: 2rem;
+        }
+        
+        /* 余额卡片 */
+        .balance-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: var(--spacing);
+            text-align: center;
+        }
+        
+        .balance-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .balance-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        /* 输入区域 */
+        .input-section {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: var(--spacing);
+        }
+        
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .all-withdraw {
+            color: var(--primary-color);
+            font-size: 0.65rem;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .amount-input {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .currency-symbol {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .amount-input input {
+            width: 100%;
+            border: var(--input-border);
+            border-radius: var(--btn-radius);
+            padding: 0.8rem 0.8rem 0.8rem 1.8rem;
+            font-size: 1rem;
+            font-weight: bold;
+            outline: none;
+            transition: var(--transition);
+            -moz-appearance: textfield;
+        }
+        
+        /* 移除数字输入框的增减按钮 */
+        .amount-input input::-webkit-outer-spin-button,
+        .amount-input input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .amount-input input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .quick-amount {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            gap: 0.4rem;
+        }
+        
+        .amount-btn {
+            background: var(--light-bg);
+            border: var(--input-border);
+            border-radius: 0.9rem;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            flex: 1;
+            transition: var(--transition);
+        }
+        
+        .amount-btn.active {
+            background: #fff5eb;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        /* 提现方式 */
+        .method-section {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: var(--spacing);
+        }
+        
+        .method-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing);
+        }
+        
+        .manage-methods {
+            color: var(--primary-color);
+            font-size: 0.65rem;
+            font-weight: normal;
+            text-decoration: none;
+        }
+        
+        .method-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing);
+        }
+        
+        .method-item {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem;
+            border: var(--input-border);
+            border-radius: var(--card-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .method-item.active {
+            border-color: var(--primary-color);
+            background: #fffaf5;
+        }
+        
+        .method-icon {
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            background: #fef2e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.6rem;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .method-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .method-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .method-desc {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .method-check {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .method-check .fa-check-circle {
+            display: none;
+        }
+        
+        .method-check .fa-circle {
+            display: inline;
+            color: #ccc;
+        }
+        
+        .method-item.active .method-check .fa-check-circle {
+            display: inline;
+        }
+        
+        .method-item.active .method-check .fa-circle {
+            display: none;
+        }
+        
+        /* 提现说明 */
+        .notes-section {
+            background: #fff8e6;
+            border-radius: var(--card-radius);
+            padding: var(--spacing);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1rem;
+            border-left: 0.2rem solid #ffb74d;
+        }
+        
+        .notes-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notes-title i {
+            margin-right: 0.4rem;
+        }
+        
+        .notes-content {
+            font-size: 0.65rem;
+            color: #e65100;
+            line-height: 1.5;
+        }
+        
+        .notes-content li {
+            margin-bottom: 0.3rem;
+        }
+        
+        /* 提现按钮 */
+        .withdraw-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--btn-radius);
+            padding: 0.8rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            box-shadow: var(--btn-shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .withdraw-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .withdraw-btn:active:not(:disabled) {
+            transform: translateY(0.1rem);
+            box-shadow: 0 0.1rem 0.4rem rgba(255, 111, 0, 0.3);
+        }
+        
+        .btn-loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s ease infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 提现记录 */
+        .records-section {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .records-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing);
+        }
+        
+        .record-list {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 0.05rem solid #f5f5f5;
+        }
+        
+        .record-item:last-child {
+            border-bottom: none;
+        }
+        
+        .record-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .record-amount {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.2rem;
+        }
+        
+        .record-date {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        
+        .record-method {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            margin: 0.2rem 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .record-method i {
+            margin-right: 0.3rem;
+        }
+        
+        .record-sn {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .record-status {
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+        }
+        
+        .status-review {
+            color: var(--warning-color);
+        }
+        
+        .status-success {
+            color: var(--success-color);
+        }
+        
+        .status-failed {
+            color: var(--error-color);
+        }
+        
+        /* 分页控件 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            gap: var(--spacing);
+        }
+        
+        .page-btn {
+            background: var(--light-bg);
+            border: var(--input-border);
+            border-radius: 0.4rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            min-height: 4rem;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 0.55rem;
+            transition: var(--transition);
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 错误提示 */
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.65rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        /* 成功/失败提示 */
+        .feedback-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--card-radius);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .feedback-toast.show {
+            opacity: 1;
+        }
+        
+        .feedback-toast.success {
+            background: rgba(76, 175, 80, 0.9);
+        }
+        
+        .feedback-toast.error {
+            background: rgba(244, 67, 54, 0.9);
+        }
+        
+        .feedback-toast i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        /* 媒体查询适配不同尺⼨设备 */
+        @media (max-width: 320px) {
+            .quick-amount {
+                flex-wrap: wrap;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .container {
+                max-width: 28rem;
+                margin: 0 auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="nav-back">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="nav-title">提现</div>
+        <div class="nav-placeholder"></div>
+    </div>
+    
+    <!-- 主要内容区 -->
+    <div class="container">
+        <!-- 余额卡片 -->
+        <div class="balance-card">
+            <div class="balance-label">可提现余额</div>
+            <div class="balance-amount">¥<span id="current-balance">328.50</span></div>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="input-section">
+            <div class="section-title">
+                <span>提现金额</span>
+                <span class="all-withdraw">全部提现</span>
+            </div>
+            
+            <div class="amount-input">
+                <span class="currency-symbol">¥</span>
+                <input type="number" id="withdraw-amount" placeholder="0.00" min="1" max="328.50" inputmode="decimal">
+            </div>
+            
+            <div class="error-message" id="amount-error">
+                提现金额不能超过可用余额
+            </div>
+            
+            <div class="quick-amount">
+                <button class="amount-btn" data-amount="50">¥50</button>
+                <button class="amount-btn" data-amount="100">¥100</button>
+                <button class="amount-btn" data-amount="200">¥200</button>
+                <button class="amount-btn active" data-amount="all">全部</button>
+            </div>
+        </div>
+        
+        <!-- 提现方式 -->
+        <div class="method-section">
+            <div class="method-header">
+                <div class="section-title">提现方式</div>
+                <a href="manage-methods.html" class="manage-methods">管理</a>
+            </div>
+            
+            <div class="method-list">
+                <div class="method-item active" data-method="alipay">
+                    <div class="method-icon">
+                        <i class="fab fa-alipay"></i>
+                    </div>
+                    <div class="method-info">
+                        <div class="method-name">支付宝</div>
+                        <div class="method-desc">48小时之内到账</div>
+                    </div>
+                    <div class="method-check">
+                        <i class="fas fa-check-circle"></i>
+                        <i class="far fa-circle"></i>
+                    </div>
+                </div>
+                
+                <div class="method-item" data-method="wechat">
+                    <div class="method-icon">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                    <div class="method-info">
+                        <div class="method-name">微信零钱</div>
+                        <div class="method-desc">48小时之内到账</div>
+                    </div>
+                    <div class="method-check">
+                        <i class="fas fa-check-circle"></i>
+                        <i class="far fa-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 提现说明 -->
+        <div class="notes-section">
+            <div class="notes-title">
+                <i class="fas fa-info-circle"></i> 提现说明
+            </div>
+            <ul class="notes-content">
+                <li>最低提现金额为¥1.00</li>
+                <li>所有提现方式均在48小时之内到账</li>
+                <li>提现可能会收取少量手续费</li>
+                <li>每日最多可提现3次</li>
+                <li>如有问题，请联系在线客服</li>
+            </ul>
+        </div>
+        
+        <!-- 提现按钮 -->
+        <button class="withdraw-btn" id="withdraw-button">
+            <span class="btn-text">确认提现</span>
+        </button>
+        
+        <!-- 提现记录 -->
+        <div class="records-section">
+            <div class="records-title">最近提现记录</div>
+            <div class="record-list" id="withdraw-records">
+                <!-- 记录将通过JavaScript动态生成 -->
+            </div>
+            
+            <!-- 分页控件 -->
+            <div class="pagination">
+                <button class="page-btn" id="prev-page" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="page-info" id="page-info">1/2</span>
+                <button class="page-btn" id="next-page">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+    <!-- 反馈提示 -->
+    <div class="feedback-toast" id="feedback-toast">
+        <i class="fas fa-check-circle"></i>
+        <span class="toast-message">操作成功</span>
+    </div>
+
+    <script>
+        // 提现管理器
+        const WithdrawManager = {
+            // 初始化
+            init() {
+                this.currentBalance = 328.50;
+                this.withdrawRecords = [
+                    { amount: 100.00, date: '2023-11-15 14:30', sn: 'TX20231115143000123', status: 'success', method: '支付宝' },
+                    { amount: 50.00, date: '2023-11-14 10:15', sn: 'TX20231114101500456', status: 'review', method: '微信零钱' },
+                    { amount: 200.00, date: '2023-11-10 09:45', sn: 'TX20231110094500789', status: 'success', method: '支付宝' },
+                    { amount: 80.00, date: '2023-11-08 16:20', sn: 'TX20231108162000321', status: 'success', method: '微信零钱' },
+                    { amount: 120.00, date: '2023-11-05 11:30', sn: 'TX20231105113000987', status: 'success', method: '支付宝' },
+                    { amount: 60.00, date: '2023-11-03 09:15', sn: 'TX20231103091500654', status: 'failed', method: '微信零钱' },
+                    { amount: 150.00, date: '2023-10-30 13:45', sn: 'TX20231030134500234', status: 'success', method: '支付宝' },
+                    { amount: 90.00, date: '2023-10-28 15:20', sn: 'TX20231028152000876', status: 'success', method: '微信零钱' },
+                    { amount: 70.00, date: '2023-10-25 10:10', sn: 'TX20231025101000543', status: 'success', method: '支付宝' },
+                    { amount: 110.00, date: '2023-10-22 14:55', sn: 'TX20231022145500129', status: 'success', method: '微信零钱' }
+                ];
+                
+                this.recordsPerPage = 5;
+                this.currentPage = 1;
+                this.totalPages = Math.ceil(this.withdrawRecords.length / this.recordsPerPage);
+                
+                this.bindEvents();
+                this.renderRecords();
+                this.updatePaginationControls();
+            },
+            
+            // 绑定事件
+            bindEvents() {
+                // 返回按钮
+                document.querySelector('.nav-back').addEventListener('click', () => {
+                    window.history.back();
+                });
+                
+                // 全部提现
+                document.querySelector('.all-withdraw').addEventListener('click', () => {
+                    this.setAllWithdraw();
+                });
+                
+                // 快捷金额按钮
+                document.querySelectorAll('.amount-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const amount = e.target.dataset.amount;
+                        this.handleQuickAmount(amount);
+                    });
+                });
+                
+                // 金额输入
+                const amountInput = document.getElementById('withdraw-amount');
+                amountInput.addEventListener('input', () => {
+                    this.handleAmountInput();
+                });
+                
+                amountInput.addEventListener('blur', () => {
+                    this.validateAmount();
+                });
+                
+                // 提现方式选择
+                document.querySelectorAll('.method-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        this.selectMethod(e.currentTarget);
+                    });
+                });
+                
+                // 分页控制
+                document.getElementById('prev-page').addEventListener('click', () => {
+                    this.prevPage();
+                });
+                
+                document.getElementById('next-page').addEventListener('click', () => {
+                    this.nextPage();
+                });
+                
+                // 提现按钮
+                document.getElementById('withdraw-button').addEventListener('click', () => {
+                    this.handleWithdraw();
+                });
+            },
+            
+            // 设置全部提现
+            setAllWithdraw() {
+                document.getElementById('withdraw-amount').value = this.currentBalance.toFixed(2);
+                this.setActiveAmountBtn(document.querySelector('.amount-btn[data-amount="all"]'));
+                this.hideError();
+            },
+            
+            // 处理快捷金额选择
+            handleQuickAmount(amount) {
+                if (amount === 'all') {
+                    document.getElementById('withdraw-amount').value = this.currentBalance.toFixed(2);
+                } else {
+                    document.getElementById('withdraw-amount').value = amount;
+                }
+                this.setActiveAmountBtn(document.querySelector(`.amount-btn[data-amount="${amount}"]`));
+                this.hideError();
+                this.validateAmount();
+            },
+            
+            // 设置激活的金额按钮
+            setActiveAmountBtn(btn) {
+                document.querySelectorAll('.amount-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                btn.classList.add('active');
+            },
+            
+            // 处理金额输入
+            handleAmountInput() {
+                // 输入时移除所有快捷按钮的激活状态
+                document.querySelectorAll('.amount-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // 实时验证金额
+                this.validateAmount();
+            },
+            
+            // 验证金额
+            validateAmount() {
+                const input = document.getElementById('withdraw-amount');
+                const amount = parseFloat(input.value);
+                
+                if (isNaN(amount)) {
+                    this.hideError();
+                    return;
+                }
+                
+                if (amount > this.currentBalance) {
+                    this.showError();
+                    return false;
+                } else {
+                    this.hideError();
+                    return true;
+                }
+            },
+            
+            // 显示错误
+            showError() {
+                document.getElementById('amount-error').style.display = 'block';
+            },
+            
+            // 隐藏错误
+            hideError() {
+                document.getElementById('amount-error').style.display = 'none';
+            },
+            
+            // 选择提现方式
+            selectMethod(item) {
+                document.querySelectorAll('.method-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                item.classList.add('active');
+            },
+            
+            // 上一页
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.renderRecords();
+                    this.updatePaginationControls();
+                }
+            },
+            
+            // 下一页
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                    this.renderRecords();
+                    this.updatePaginationControls();
+                }
+            },
+            
+            // 渲染记录
+            renderRecords() {
+                const recordList = document.getElementById('withdraw-records');
+                recordList.innerHTML = '';
+                
+                const startIndex = (this.currentPage - 1) * this.recordsPerPage;
+                const endIndex = Math.min(startIndex + this.recordsPerPage, this.withdrawRecords.length);
+                
+                for (let i = startIndex; i < endIndex; i++) {
+                    const record = this.withdrawRecords[i];
+                    const recordElement = document.createElement('div');
+                    recordElement.className = 'record-item';
+                    
+                    // 根据支付方式选择图标
+                    const methodIcon = record.method === '支付宝' ? 
+                        '<i class="fab fa-alipay" style="color: #1677ff;"></i>' : 
+                        '<i class="fab fa-weixin" style="color: #07c160;"></i>';
+                    
+                    recordElement.innerHTML = `
+                        <div class="record-info">
+                            <div class="record-amount">¥${record.amount.toFixed(2)}</div>
+                            <div class="record-date">${record.date}</div>
+                            <div class="record-method">${methodIcon} ${record.method}</div>
+                            <div class="record-sn">流水号: ${record.sn}</div>
+                        </div>
+                        <div class="record-status status-${record.status}">
+                            ${this.getStatusText(record.status)}
+                        </div>
+                    `;
+                    
+                    recordList.appendChild(recordElement);
+                }
+            },
+            
+            // 获取状态文本
+            getStatusText(status) {
+                switch(status) {
+                    case 'success': return '已到账';
+                    case 'review': return '审核中';
+                    case 'failed': return '失败';
+                    default: return '未知';
+                }
+            },
+            
+            // 更新分页控件
+            updatePaginationControls() {
+                document.getElementById('page-info').textContent = `${this.currentPage}/${this.totalPages}`;
+                document.getElementById('prev-page').disabled = this.currentPage === 1;
+                document.getElementById('next-page').disabled = this.currentPage === this.totalPages;
+            },
+            
+            // 生成流水号
+            generateSerialNumber() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                
+                return `TX${year}${month}${day}${hours}${minutes}${seconds}${randomNum}`;
+            },
+            
+            // 显示反馈提示
+            showFeedback(message, type = 'success') {
+                const toast = document.getElementById('feedback-toast');
+                const icon = toast.querySelector('i');
+                const messageEl = toast.querySelector('.toast-message');
+                
+                // 设置图标和消息
+                if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                    toast.className = 'feedback-toast success';
+                } else {
+                    icon.className = 'fas fa-exclamation-circle';
+                    toast.className = 'feedback-toast error';
+                }
+                
+                messageEl.textContent = message;
+                
+                // 显示提示
+                toast.classList.add('show');
+                
+                // 3秒后隐藏
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            },
+            
+            // 处理提现
+            async handleWithdraw() {
+                const input = document.getElementById('withdraw-amount');
+                const amount = parseFloat(input.value);
+                const button = document.getElementById('withdraw-button');
+                const buttonText = button.querySelector('.btn-text');
+                
+                // 验证输入
+                if (!amount || amount <= 0) {
+                    this.showFeedback('请输入提现金额', 'error');
+                    return;
+                }
+                
+                if (amount > this.currentBalance) {
+                    this.showFeedback('提现金额不能超过可用余额', 'error');
+                    return;
+                }
+                
+                if (amount < 1) {
+                    this.showFeedback('最低提现金额为¥1.00', 'error');
+                    return;
+                }
+                
+                // 获取选中的提现方式
+                const method = document.querySelector('.method-item.active .method-name').textContent;
+                
+                // 显示加载状态
+                button.disabled = true;
+                buttonText.innerHTML = '<span class="btn-loading"></span>处理中...';
+                
+                // 模拟API请求延迟
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 更新余额
+                this.currentBalance -= amount;
+                document.getElementById('current-balance').textContent = this.currentBalance.toFixed(2);
+                
+                // 生成流水号
+                const serialNumber = this.generateSerialNumber();
+                
+                // 获取当前时间
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
+                // 创建新记录对象
+                const newRecord = {
+                    amount: amount,
+                    date: `${year}-${month}-${day} ${hours}:${minutes}`,
+                    sn: serialNumber,
+                    status: 'review',
+                    method: method
+                };
+                
+                // 将新记录添加到数组开头
+                this.withdrawRecords.unshift(newRecord);
+                
+                // 更新总页数
+                this.totalPages = Math.ceil(this.withdrawRecords.length / this.recordsPerPage);
+                
+                // 如果当前不是第一页，则跳转到第一页
+                if (this.currentPage !== 1) {
+                    this.currentPage = 1;
+                }
+                
+                // 重新渲染记录和更新分页控件
+                this.renderRecords();
+                this.updatePaginationControls();
+                
+                // 清空输入框
+                input.value = '';
+                
+                // 重置快捷金额按钮
+                document.querySelectorAll('.amount-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // 恢复按钮状态
+                button.disabled = false;
+                buttonText.textContent = '确认提现';
+                
+                // 显示成功提示
+                this.showFeedback(`提现申请提交成功！金额：¥${amount.toFixed(2)}`);
+            }
+        };
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            WithdrawManager.init();
+        });
+    </script>
+</body>
+</html>

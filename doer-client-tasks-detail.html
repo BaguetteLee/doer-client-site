@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务审核详情 - 我的订单</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">index
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        :root {
+            --primary-color: #ff7e00;
+            --primary-dark: #ff5f00;
+            --bg-light: #f8f9fa;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --info-color: #2196f3;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --border-color: #e0e0e0;
+            --card-radius: 0.6rem;
+            --btn-radius: 0.6rem;
+            --spacing: 0.8rem;
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            --btn-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            padding-bottom: 3rem;
+        }
+        
+        /* 顶部区域 */
+        .header {
+            padding: 0.6rem var(--spacing) 0.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-bottom-left-radius: var(--card-radius);
+            border-bottom-right-radius: var(--card-radius);
+            box-shadow: var(--btn-shadow);
+            flex-shrink: 0;
+        }
+        
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+        
+        .back-button {
+            color: white;
+            font-size: 1rem;
+            width: 1.8rem;
+            height: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: 0 0.08rem 0.15rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-icon {
+            color: white;
+            font-size: 1rem;
+            width: 1.8rem;
+            height: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            visibility: hidden;
+        }
+        
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 状态指示器 */
+        .status-indicator {
+            padding: 0.8rem;
+            border-radius: var(--card-radius);
+            margin-bottom: var(--spacing);
+            display: flex;
+            align-items: center;
+            color: white;
+            font-weight: 500;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .status-review {
+            background: linear-gradient(135deg, var(--info-color), #1976d2);
+        }
+        
+        .status-rejected {
+            background: linear-gradient(135deg, var(--error-color), #d32f2f);
+        }
+        
+        .status-completed {
+            background: linear-gradient(135deg, var(--success-color), #2e7d32);
+        }
+        
+        .status-indicator i {
+            font-size: 1.2rem;
+            margin-right: 0.6rem;
+        }
+        
+        /* 任务信息卡片 */
+        .task-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: var(--spacing);
+            margin-bottom: var(--spacing);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            flex: 1;
+            margin-right: 0.5rem;
+        }
+        
+        .task-reward {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+        
+        .reward-label {
+            font-size: 0.6rem;
+            font-weight: bold;
+            margin-bottom: 0.1rem;
+        }
+        
+        .task-meta {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            margin-right: 0.8rem;
+            margin-bottom: 0.3rem;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+        
+        .meta-item i {
+            margin-right: 0.3rem;
+            font-size: 0.6rem;
+            width: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .task-section {
+            margin-bottom: var(--spacing);
+        }
+        
+        .section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 0.3rem;
+            font-size: 0.65rem;
+        }
+        
+        .section-content {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* 审核时间线 */
+        .timeline {
+            position: relative;
+            padding-left: 1.2rem;
+            margin: var(--spacing) 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.35rem;
+            top: 0;
+            bottom: 0;
+            width: 0.1rem;
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 0.8rem;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -1.2rem;
+            top: 0.2rem;
+            width: 0.8rem;
+            height: 0.8rem;
+            border-radius: 50%;
+            background-color: white;
+            border: 0.15rem solid;
+        }
+        
+        .timeline-dot.review {
+            border-color: var(--info-color);
+        }
+        
+        .timeline-dot.rejected {
+            border-color: var(--error-color);
+        }
+        
+        .timeline-dot.completed {
+            border-color: var(--success-color);
+        }
+        
+        .timeline-content {
+            background: white;
+            border-radius: 0.4rem;
+            padding: 0.6rem;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .timeline-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .timeline-time {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        
+        .timeline-desc {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+        
+        /* 审核反馈 */
+        .feedback-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: var(--spacing);
+            margin-bottom: var(--spacing);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.6rem;
+        }
+        
+        .feedback-avatar {
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .feedback-info {
+            flex: 1;
+        }
+        
+        .feedback-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .feedback-role {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        
+        .feedback-time {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+        
+        .feedback-content {
+            font-size: 0.7rem;
+            line-height: 1.5;
+            padding: 0.6rem;
+            border-radius: 0.4rem;
+            background-color: #f9f9f9;
+        }
+        
+        .feedback-reason {
+            margin-top: 0.6rem;
+            padding: 0.6rem;
+            border-radius: 0.4rem;
+            background-color: #fff8e1;
+            border-left: 0.2rem solid var(--warning-color);
+            font-size: 0.65rem;
+        }
+        
+        .feedback-reason-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--warning-color);
+        }
+        
+        /* 提交内容预览 */
+        .submission-preview {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: var(--spacing);
+            margin-bottom: var(--spacing);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .preview-item {
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 0.05rem solid #f0f0f0;
+        }
+        
+        .preview-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .preview-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+        
+        .preview-content {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+        }
+        
+        .file-item {
+            position: relative;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            height: 4rem;
+            background-color: #f0f8ff;
+            border: 0.05rem solid #d1e9ff;
+        }
+        
+        .file-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .file-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.5rem;
+        }
+        
+        .file-placeholder i {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .file-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.2rem;
+            font-size: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: var(--btn-radius);
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: var(--btn-shadow);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--text-secondary);
+            box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn:active:not(:disabled) {
+            transform: translateY(0.1rem);
+            box-shadow: 0 0.05rem 0.2rem rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            transition: all 0.2s ease;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 320px) {
+            .file-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .file-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 -->
+    <div class="header">
+        <div class="top-section">
+            <div class="back-button" id="backButton">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="page-title">任务审核详情</div>
+            <div class="user-icon">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content" id="content">
+        <!-- 内容将通过JavaScript动态生成 -->
+    </div>
+    
+    <!-- 底部导航 -->
+      <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item active">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+    <script>
+        // 从URL获取订单ID和状态
+        const urlParams = new URLSearchParams(window.location.search);
+        let orderId = urlParams.get('id');
+        let status = urlParams.get('status');
+        
+        // 如果没有URL参数，使用默认值
+        if (!orderId) {
+            orderId = 'TSK-20250820-001';
+        }
+        if (!status) {
+            status = 'under-review'; // 默认显示审核中状态
+        }
+        
+        // 订单数据 - 与tasks.html保持一致
+        const orders = {
+            'under-review': [
+                { 
+                    id: 'TSK-20250822-004',
+                    category: '市场调研', 
+                    icon: 'fa-chart-line',
+                    name: '消费者偏好调查', 
+                    reward: 20, 
+                    claimTime: '2025-08-22 10:30',
+                    submitTime: '2025-08-22 16:45',
+                    status: '审核中',
+                    description: '调查目标消费者群体的产品偏好和购买习惯。',
+                    requirements: '需要收集至少200份有效问卷，并提供数据分析报告。',
+                    contact: '市场研究: market-research@example.com',
+                    // 审核中特有的数据
+                    reviewer: '张审核员',
+                    reviewStartTime: '2025-08-22 17:20',
+                    estimatedCompletion: '2025-08-23 12:00'
+                },
+                { 
+                    id: 'TSK-20250821-005',
+                    category: '内容创作', 
+                    icon: 'fa-pencil-alt',
+                    name: '产品使用体验文章', 
+                    reward: 35, 
+                    claimTime: '2025-08-21 09:15',
+                    submitTime: '2025-08-21 21:30',
+                    status: '审核中',
+                    description: '撰写一篇关于产品使用体验的文章，分享真实感受。',
+                    requirements: '文章字数不少于1500字，包含至少5张产品使用图片。',
+                    contact: '内容编辑: content-editor@example.com',
+                    reviewer: '李编辑',
+                    reviewStartTime: '2025-08-22 09:00',
+                    estimatedCompletion: '2025-08-22 18:00'
+                }
+            ],
+            'rejected': [
+                { 
+                    id: 'TSK-20250815-006',
+                    category: 'APP测试', 
+                    icon: 'fa-mobile-alt',
+                    name: '购物应用功能测试', 
+                    reward: 12, 
+                    claimTime: '2025-08-15 09:15',
+                    submitTime: '2025-08-15 11:20', 
+                    rejectTime: '2025-08-17 09:45',
+                    reason: '测试步骤不完整，缺少关键环节的截图证明',
+                    description: '测试购物应用的核心功能，包括浏览商品、加入购物车和支付流程。',
+                    requirements: '需要测试所有主要功能并提供详细的错误报告和截图。',
+                    contact: 'QA团队: qa-team@example.com',
+                    // 被驳回特有的数据
+                    reviewer: '王测试经理',
+                    reviewTime: '2025-08-17 09:30',
+                    feedback: '您的测试报告缺少支付流程的完整截图，无法验证支付功能是否正常。请补充相关截图后重新提交。',
+                    // 提交的内容
+                    submission: {
+                        description: '已完成购物应用的功能测试，发现了几个小问题，但整体运行良好。',
+                        files: [
+                            { name: '测试报告.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+                            { name: '主页截图.png', type: 'image/png' },
+                            { name: '商品页截图.png', type: 'image/png' }
+                        ]
+                    }
+                }
+            ],
+            'completed': [
+                { 
+                    id: 'TSK-20250813-008',
+                    category: '线上问卷', 
+                    icon: 'fa-clipboard-list',
+                    name: '健康生活方式调研', 
+                    reward: 10, 
+                    claimTime: '2025-08-13 10:30',
+                    submitTime: '2025-08-13 13:25', 
+                    reviewTime: '2025-08-15 10:30',
+                    completeTime: '2025-08-15 10:45',
+                    status: '已完成',
+                    description: '参与健康生活方式问卷调查，分享个人习惯和看法。',
+                    requirements: '需要完整回答问卷中的所有问题，提交有效回答。',
+                    contact: '调研团队: survey-team@example.com',
+                    // 已完成特有的数据
+                    reviewer: '赵研究员',
+                    reviewTime: '2025-08-15 10:30',
+                    feedback: '问卷回答完整，数据质量高，符合调研要求。',
+                    rating: 4.5,
+                    // 提交的内容
+                    submission: {
+                        description: '已完整填写问卷中的所有问题，提供了真实有效的回答。',
+                        files: [
+                            { name: '问卷回答.pdf', type: 'application/pdf' }
+                        ]
+                    },
+                    // 赏金信息
+                    rewardStatus: '已发放',
+                    rewardTime: '2025-08-15 11:30'
+                }
+            ]
+        };
+
+        // 查找订单
+        function findOrder() {
+            const categoryOrders = orders[status];
+            if (!categoryOrders) return null;
+            
+            return categoryOrders.find(item => item.id === orderId);
+        }
+
+        // 格式化日期时间显示
+        function formatDateTime(dateTimeStr) {
+            const date = new Date(dateTimeStr);
+            return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${padZero(date.getHours())}:${padZero(date.getMinutes())}`;
+        }
+
+        // 数字补零
+        function padZero(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // 获取文件图标
+        function getFileIcon(type) {
+            if (type.includes('image')) return 'fa-image';
+            if (type.includes('pdf')) return 'fa-file-pdf';
+            if (type.includes('word')) return 'fa-file-word';
+            if (type.includes('excel') || type.includes('sheet')) return 'fa-file-excel';
+            if (type.includes('zip') || type.includes('rar')) return 'fa-file-archive';
+            return 'fa-file';
+        }
+
+        // 渲染任务审核详情
+        function renderTaskDetail() {
+            const order = findOrder();
+            const contentEl = document.getElementById('content');
+            
+            if (!order) {
+                contentEl.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #888;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <div>未找到该任务</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let statusHTML = '';
+            let timelineHTML = '';
+            let feedbackHTML = '';
+            let submissionHTML = '';
+            let actionHTML = '';
+            
+            // 根据状态生成不同的内容
+            if (status === 'under-review') {
+                // 审核中状态
+                statusHTML = `
+                    <div class="status-indicator status-review">
+                        <i class="fas fa-hourglass-half"></i>
+                        <div>
+                            <div>审核中</div>
+                            <div style="font-size: 0.65rem; opacity: 0.9;">预计完成时间: ${formatDateTime(order.estimatedCompletion)}</div>
+                        </div>
+                    </div>
+                `;
+                
+                timelineHTML = `
+                    <div class="task-card">
+                        <div class="section-title">
+                            <i class="fas fa-history"></i>
+                            <span>审核时间线</span>
+                        </div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot review"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>任务提交</span>
+                                        <span class="timeline-time">${formatDateTime(order.submitTime)}</span>
+                                    </div>
+                                    <div class="timeline-desc">您已成功提交任务，等待审核</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>审核完成</span>
+                                        <span class="timeline-time">预计 ${formatDateTime(order.estimatedCompletion)}</span>
+                                    </div>
+                                    <div class="timeline-desc">审核完成后将通知您结果</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 显示提交的内容（如果有）
+                if (order.submission) {
+                    submissionHTML = `
+                        <div class="submission-preview">
+                            <div class="section-title">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>您提交的内容</span>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">任务描述</div>
+                                <div class="preview-content">${order.submission.description}</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">上传的文件</div>
+                                <div class="file-list">
+                                    ${order.submission.files.map(file => `
+                                        <div class="file-item">
+                                            <div class="file-placeholder">
+                                                <i class="fas ${getFileIcon(file.type)}"></i>
+                                                <span>${file.name.split('.').pop()}</span>
+                                            </div>
+                                            <div class="file-name">${file.name}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                actionHTML = `
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                        <button class="btn btn-primary" onclick="contactReviewer()">联系审核员</button>
+                    </div>
+                `;
+                
+            } else if (status === 'rejected') {
+                // 被驳回状态
+                statusHTML = `
+                    <div class="status-indicator status-rejected">
+                        <i class="fas fa-times-circle"></i>
+                        <div>已驳回</div>
+                    </div>
+                `;
+                
+                timelineHTML = `
+                    <div class="task-card">
+                        <div class="section-title">
+                            <i class="fas fa-history"></i>
+                            <span>审核时间线</span>
+                        </div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>任务提交</span>
+                                        <span class="timeline-time">${formatDateTime(order.submitTime)}</span>
+                                    </div>
+                                    <div class="timeline-desc">您已成功提交任务</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot rejected"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>审核驳回</span>
+                                        <span class="timeline-time">${formatDateTime(order.rejectTime)}</span>
+                                    </div>
+                                    <div class="timeline-desc">任务未通过审核</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 驳回原因直接显示在时间线下方
+                feedbackHTML = `
+                    <div class="task-card">
+                        <div class="section-title">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>驳回原因</span>
+                        </div>
+                        <div class="section-content">
+                            ${order.reason}
+                        </div>
+                    </div>
+                `;
+                
+                // 显示提交的内容（如果有）
+                if (order.submission) {
+                    submissionHTML = `
+                        <div class="submission-preview">
+                            <div class="section-title">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>您提交的内容</span>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">任务描述</div>
+                                <div class="preview-content">${order.submission.description}</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">上传的文件</div>
+                                <div class="file-list">
+                                    ${order.submission.files.map(file => `
+                                        <div class="file-item">
+                                            <div class="file-placeholder">
+                                                <i class="fas ${getFileIcon(file.type)}"></i>
+                                                <span>${file.name.split('.').pop()}</span>
+                                            </div>
+                                            <div class="file-name">${file.name}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                actionHTML = `
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                        <button class="btn btn-primary" onclick="contactCustomerService()">联系客服</button>
+                    </div>
+                `;
+                
+            } else if (status === 'completed') {
+                // 已完成状态
+                statusHTML = `
+                    <div class="status-indicator status-completed">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <div>已完成</div>
+                            <div style="font-size: 0.65rem; opacity: 0.9;">赏金已发放</div>
+                        </div>
+                    </div>
+                `;
+                
+                timelineHTML = `
+                    <div class="task-card">
+                        <div class="section-title">
+                            <i class="fas fa-history"></i>
+                            <span>任务时间线</span>
+                        </div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>任务领取</span>
+                                        <span class="timeline-time">${formatDateTime(order.claimTime)}</span>
+                                    </div>
+                                    <div class="timeline-desc">您领取了此任务</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>任务提交</span>
+                                        <span class="timeline-time">${formatDateTime(order.submitTime)}</span>
+                                    </div>
+                                    <div class="timeline-desc">您提交了任务完成内容</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot completed"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">
+                                        <span>审核通过</span>
+                                        <span class="timeline-time">${formatDateTime(order.completeTime)}</span>
+                                    </div>
+                                    <div class="timeline-desc">任务通过审核，赏金已发放</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 显示提交的内容（如果有）
+                if (order.submission) {
+                    submissionHTML = `
+                        <div class="submission-preview">
+                            <div class="section-title">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>您提交的内容</span>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">任务描述</div>
+                                <div class="preview-content">${order.submission.description}</div>
+                            </div>
+                            <div class="preview-item">
+                                <div class="preview-label">上传的文件</div>
+                                <div class="file-list">
+                                    ${order.submission.files.map(file => `
+                                        <div class="file-item">
+                                            <div class="file-placeholder">
+                                                <i class="fas ${getFileIcon(file.type)}"></i>
+                                                <span>${file.name.split('.').pop()}</span>
+                                            </div>
+                                            <div class="file-name">${file.name}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 赏金信息
+                submissionHTML += `
+                    <div class="task-card">
+                        <div class="section-title">
+                            <i class="fas fa-coins"></i>
+                            <span>赏金信息</span>
+                        </div>
+                        <div class="section-content">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                <span>任务赏金:</span>
+                                <span style="font-weight: 600; color: var(--primary-color);">¥${order.reward}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                <span>状态:</span>
+                                <span style="color: var(--success-color);">${order.rewardStatus || '已发放'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>发放时间:</span>
+                                <span>${formatDateTime(order.rewardTime || order.completeTime)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                actionHTML = `
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                        <a href="tasks.html?tab=completed" class="btn btn-primary">查看已完成任务</a>
+                    </div>
+                `;
+            }
+            
+            // 任务基本信息
+            const taskInfoHTML = `
+                <div class="task-card">
+                    <div class="task-header">
+                        <div class="task-title">${order.name}</div>
+                        <div class="task-reward">
+                            <div class="reward-label">赏金</div>
+                            <div>¥${order.reward}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <i class="fas ${order.icon}"></i>
+                            <span>${order.category}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-barcode"></i>
+                            <span>ID: ${order.id}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-section">
+                        <div class="section-title">
+                            <i class="fas fa-align-left"></i>
+                            <span>任务描述</span>
+                        </div>
+                        <div class="section-content">${order.description}</div>
+                    </div>
+                    
+                    <div class="task-section">
+                        <div class="section-title">
+                            <i class="fas fa-tasks"></i>
+                            <span>任务要求</span>
+                        </div>
+                        <div class="section-content">${order.requirements}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 组合所有内容
+            contentEl.innerHTML = `
+                ${statusHTML}
+                ${taskInfoHTML}
+                ${timelineHTML}
+                ${feedbackHTML}
+                ${submissionHTML}
+                ${actionHTML}
+            `;
+        }
+
+        // 联系审核员
+        function contactReviewer() {
+            alert('功能开发中...');
+        }
+
+        // 联系客服
+        function contactCustomerService() {
+            alert('联系客服功能开发中...');
+        }
+
+        // 返回上一页或默认页面
+        function goBack() {
+            // 检查是否有上一页历史记录
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // 如果没有历史记录，默认返回任务列表页面
+                window.location.href = 'doer-client-tasks-list.html';
+            }
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTaskDetail();
+            
+            // 为返回按钮添加事件监听器
+            document.getElementById('backButton').addEventListener('click', goBack);
+        });
+    </script>
+</body>
+</html>

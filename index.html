@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>轻松工作 - 优质接单平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function () {
+    // 修复：移除多余的 index 标识符，保证 rem 适配脚本正常执行（中文注释）
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px（原为20px，整体缩小）
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        :root {
+            --primary-color: #ff7e00;
+            --primary-dark: #ff5f00;
+            --bg-color: #f8f9fa;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --card-radius: 0.6rem;
+            --button-radius: 0.6rem;
+            --base-spacing: 0.8rem;
+            --nav-height: 3.5rem;
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            --button-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            padding-bottom: var(--nav-height);
+        }
+        
+        /* 顶部区域 - 重新设计布局 */
+        .header {
+            padding: 0.6rem var(--base-spacing) var(--base-spacing);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-bottom-left-radius: var(--card-radius);
+            border-bottom-right-radius: var(--card-radius);
+            box-shadow: 0 0.15rem 0.6rem rgba(255, 111, 0, 0.25);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .logo {
+            width: 2rem;
+            height: 2rem;
+            background-color: white;
+            border-radius: var(--card-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.6rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            box-shadow: 0 0.15rem 0.4rem rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+        
+        .slogan h1 {
+            font-size: 0.8rem;
+            margin-bottom: 0.15rem;
+            font-weight: 600;
+            text-shadow: 0 0.08rem 0.15rem rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .slogan p {
+            font-size: 0.6rem;
+            opacity: 0.95;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 搜索框移到LOGO下方 */
+        .search-container {
+            padding: 0 0.5rem;
+        }
+        
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: var(--button-radius);
+            padding: 0.45rem var(--base-spacing);
+            align-items: center;
+            width: 100%;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        
+        .search-box:focus-within {
+            transform: translateY(-0.05rem);
+            box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.2);
+        }
+        
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.25rem;
+            font-size: 0.7rem;
+            outline: none;
+            color: var(--text-secondary);
+            min-width: 0;
+        }
+        
+        .search-box i {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+        
+        /* 内容区域 */
+        .content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 海报区域 - 高度缩小一半 */
+        .poster-container {
+            padding: 0.4rem 0.6rem 0.3rem; /* 减小上下内边距 */
+            flex-shrink: 0;
+        }
+        
+        .carousel {
+            position: relative;
+            height: 3.1rem; /* 原高度6.2rem的一半 */
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+        
+        .carousel-item {
+            flex: 0 0 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem; /* 减小字体大小 */
+            font-weight: bold;
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+            padding: 0 var(--base-spacing);
+        }
+        
+        .carousel-item:nth-child(1) {
+            background: linear-gradient(to right, #ff9a3d, var(--primary-color));
+        }
+        
+        .carousel-item:nth-child(2) {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+        }
+        
+        .carousel-item:nth-child(3) {
+            background: linear-gradient(to right, #11998e, #38ef7d);
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 0.2rem; /* 调整指示器位置 */
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.2rem; /* 减小间距 */
+        }
+        
+        .indicator {
+            width: 0.25rem; /* 减小指示器大小 */
+            height: 0.25rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .indicator.active {
+            width: 0.6rem; /* 减小激活状态指示器大小 */
+            border-radius: 0.15rem;
+            background-color: white;
+        }
+        
+        /* 选项卡区域 - 上移并调整位置 */
+        .tabs-container {
+            background-color: white;
+            padding: 0.5rem; /* 减小内边距 */
+            margin: 0.3rem 0.6rem 0.6rem; /* 调整外边距 */
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            flex-shrink: 0;
+            position: sticky;
+            top: 4.5rem; /* 调整粘性定位位置 */
+            z-index: 90;
+        }
+        
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            gap: 0.3rem; /* 减小间距 */
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            flex: 0 0 auto;
+            padding: 0.3rem 0.6rem; /* 减小内边距 */
+            border-radius: var(--button-radius);
+            background: var(--bg-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            font-size: 0.65rem; /* 减小字体大小 */
+        }
+        
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--button-shadow);
+        }
+        
+        /* 任务列表 - 可滚动区域 */
+        .tasks-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 0.6rem 4rem; /* 增加底部内边距，避免内容被导航栏遮挡 */
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .task-list {
+            display: none;
+        }
+        
+        .task-list.active {
+            display: block;
+        }
+        
+        .task-item {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 0.65rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .task-item:hover {
+            transform: translateY(-0.1rem);
+            box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.08);
+        }
+        
+        .task-icon {
+            width: 2.1rem;
+            height: 2.1rem;
+            background: #fef2e7;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.6rem;
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        
+        .task-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .task-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .task-stats {
+            display: flex;
+            flex-wrap: wrap;
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            gap: 0.4rem;
+        }
+        
+        .task-stat {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .task-stat i {
+            margin-right: 0.15rem;
+            font-size: 0.55rem;
+        }
+        
+        .claimed {
+            color: var(--primary-color) !important;
+            font-weight: 600;
+        }
+        
+        .task-reward-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            margin-left: 0.4rem;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        
+        .task-reward {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .task-fee {
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            margin-top: 0.15rem;
+        }
+        
+        /* 加载更多提示 */
+        .load-more-hint {
+            text-align: center;
+            padding: 0.6rem;
+            color: #aaa;
+            font-size: 0.65rem;
+        }
+        
+        /* 底部导航 - 固定定位 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            flex-shrink: 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: var(--nav-height);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            transition: var(--transition);
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--button-radius);
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 加载动画 */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 0.8rem;
+        }
+        
+        .loader .dot {
+            display: inline-block;
+            width: 0.35rem;
+            height: 0.35rem;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin: 0 0.15rem;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+        
+        .loader .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loader .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-0.3rem); }
+        }
+        
+        /* 媒体查询适配不同尺⼨设备 */
+        @media (max-width: 320px) {
+            .search-box {
+                padding: 0.4rem 0.7rem;
+            }
+            
+            .carousel {
+                height: 2.75rem; /* 调整小屏幕上的高度 */
+            }
+            
+            .carousel-item {
+                font-size: 0.6rem; /* 调整字体大小 */
+            }
+            
+            .task-stats {
+                flex-direction: column;
+                gap: 0.15rem;
+            }
+            
+            .tabs-container {
+                top: 4rem; /* 小屏幕上调整粘性定位 */
+            }
+        }
+        
+        @media (min-width: 414px) and (max-width: 500px) {
+            .carousel {
+                height: 3.5rem; /* 调整中等屏幕上的高度 */
+            }
+            
+            .carousel-item {
+                font-size: 0.8rem; /* 调整字体大小 */
+            }
+            
+            .task-name {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .carousel {
+                height: 4.25rem; /* 调整大屏幕上的高度 */
+            }
+            
+            .carousel-item {
+                font-size: 0.9rem; /* 调整字体大小 */
+            }
+            
+            .task-item {
+                padding: 0.8rem;
+            }
+            
+            .task-name {
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* 新增：空状态提示 */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        
+        .empty-state p {
+            font-size: 0.8rem;
+        }
+
+        /* 搜索结果样式 */
+        .search-results {
+            padding: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 - 重新设计布局 -->
+    <div class="header">
+        <div class="top-section">
+            <div class="logo-section">
+                <div class="logo">易</div>
+                <div class="slogan">
+                    <h1>轻松工作，赚点外快。</h1>
+                    <p>优质接单平台，安全无押，随时提现</p>
+                </div>
+            </div>
+            <!-- 已移除用户图标 -->
+        </div>
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" placeholder="搜索任务..." id="searchInput">
+                <i class="fas fa-search" id="searchBtn"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <div class="content">
+        <!-- 海报区域 - 高度缩小一半 -->
+        <div class="poster-container">
+            <div class="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item">限时活动，完成任务得双倍奖励</div>
+                    <div class="carousel-item">新用户专享，首单立返50%</div>
+                    <div class="carousel-item">推荐好友，双方各得¥30</div>
+                </div>
+                <div class="carousel-indicators">
+                    <div class="indicator active" data-index="0"></div>
+                    <div class="indicator" data-index="1"></div>
+                    <div class="indicator" data-index="2"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 选项卡区域 -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-target="all">全部任务</div>
+                <div class="tab" data-target="online">线上任务</div>
+                <div class="tab" data-target="offline">线下任务</div>
+                <div class="tab" data-target="quick">快速任务</div>
+                <div class="tab" data-target="high-value">高赏金</div>
+                <div class="tab" data-target="part-time">兼职</div>
+            </div>
+        </div>
+        
+        <!-- 任务列表 - 可滚动区域 -->
+        <div class="tasks-scroll-container" id="tasksScrollContainer">
+            <!-- 搜索结果提示 -->
+            <div class="search-results" id="searchResults" style="display: none;"></div>
+            
+            <!-- 全部任务 -->
+            <div class="task-list active" id="all">
+                <!-- 任务项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 线上任务 -->
+            <div class="task-list" id="online">
+                <!-- 任务项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 线下任务 -->
+            <div class="task-list" id="offline">
+                <!-- 任务项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 快速任务 -->
+            <div class="task-list" id="quick">
+                <!-- 任务项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 高赏金任务 -->
+            <div class="task-list" id="high-value">
+                <!-- 任务项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 兼职任务 -->
+            <div class="task-list" id="part-time">
+                <!-- 任务项将通过JavaScript动态添加 -->
+            </div>
+            
+            <!-- 加载更多提示 -->
+            <div class="load-more-hint" id="loadMoreHint">
+                <i class="fas fa-chevron-down"></i> 上拉加载更多任务
+            </div>
+            
+            <div class="loader" id="loader">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 任务数据
+        const tasks = {
+            all: [
+                { id: 'T20231025001', icon: 'fa-pencil-alt', name: '文案写作', total: 200, claimed: 150, reward: 15 },
+                { id: 'T20231025002', icon: 'fa-chart-line', name: '市场调研', total: 100, claimed: 75, reward: 20 },
+                { id: 'T20231025003', icon: 'fa-code', name: '小程序开发', total: 30, claimed: 22, reward: 200 },
+                { id: 'T20231025004', icon: 'fa-desktop', name: '网站测试', total: 80, claimed: 60, reward: 12 },
+                { id: 'T20231025005', icon: 'fa-comments', name: '在线客服', total: 50, claimed: 30, reward: 18 },
+                { id: 'T20231025006', icon: 'fa-mobile-alt', name: 'APP体验', total: 120, claimed: 90, reward: 10 },
+                { id: 'T20231025007', icon: 'fa-pen-fancy', name: '平面设计', total: 45, claimed: 30, reward: 50 },
+                { id: 'T20231025008', icon: 'fa-video', name: '短视频制作', total: 60, claimed: 40, reward: 35 },
+                { id: 'T20231025009', icon: 'fa-translate', name: '英文翻译', total: 70, claimed: 45, reward: 25 },
+                { id: 'T20231025010', icon: 'fa-edit', name: '数据录入', total: 200, claimed: 160, reward: 8 },
+                { id: 'T20231025011', icon: 'fa-store', name: '门店促销', total: 40, claimed: 25, reward: 120 },
+                { id: 'T20231025012', icon: 'fa-clipboard-list', name: '问卷调查', total: 150, claimed: 110, reward: 15 },
+                { id: 'T20231025013', icon: 'fa-camera', name: '产品拍摄', total: 25, claimed: 18, reward: 80 },
+                { id: 'T20231025014', icon: 'fa-palette', name: 'UI设计', total: 35, claimed: 25, reward: 150 }
+            ],
+            online: [
+                { id: 'T20231025004', icon: 'fa-desktop', name: '网站测试', total: 80, claimed: 60, reward: 12 },
+                { id: 'T20231025005', icon: 'fa-comments', name: '在线客服', total: 50, claimed: 30, reward: 18 },
+                { id: 'T20231025006', icon: 'fa-mobile-alt', name: 'APP体验', total: 120, claimed: 90, reward: 10 },
+                { id: 'T20231025003', icon: 'fa-code', name: '小程序开发', total: 30, claimed: 22, reward: 200 },
+                { id: 'T20231025015', icon: 'fa-pencil-alt', name: '线上文案写作', total: 150, claimed: 120, reward: 15 },
+                { id: 'T20231025016', icon: 'fa-translate', name: '文档翻译', total: 70, claimed: 45, reward: 25 }
+            ],
+            offline: [
+                { id: 'T20231025011', icon: 'fa-store', name: '门店促销', total: 40, claimed: 25, reward: 120 },
+                { id: 'T20231025017', icon: 'fa-clipboard-list', name: '市场调研', total: 60, claimed: 40, reward: 80 },
+                { id: 'T20231025018', icon: 'fa-utensils', name: '餐厅服务员', total: 30, claimed: 20, reward: 100 },
+                { id: 'T20231025013', icon: 'fa-camera', name: '产品拍摄', total: 25, claimed: 18, reward: 80 }
+            ],
+            quick: [
+                { id: 'T20231025006', icon: 'fa-mobile-alt', name: 'APP体验', total: 120, claimed: 90, reward: 10 },
+                { id: 'T20231025010', icon: 'fa-edit', name: '数据录入', total: 200, claimed: 160, reward: 8 },
+                { id: 'T20231025019', icon: 'fa-question-circle', name: '快速问卷调查', total: 150, claimed: 110, reward: 5 },
+                { id: 'T20231025020', icon: 'fa-star', name: '产品评价', total: 100, claimed: 80, reward: 3 }
+            ],
+            'high-value': [
+                { id: 'T20231025003', icon: 'fa-code', name: '小程序开发', total: 30, claimed: 22, reward: 200 },
+                { id: 'T20231025014', icon: 'fa-palette', name: 'UI设计', total: 35, claimed: 25, reward: 150 },
+                { id: 'T20231025011', icon: 'fa-store', name: '门店促销', total: 40, claimed: 25, reward: 120 },
+                { id: 'T20231025013', icon: 'fa-camera', name: '产品拍摄', total: 25, claimed: 18, reward: 80 },
+                { id: 'T20231025021', icon: 'fa-video', name: '短视频制作', total: 60, claimed: 40, reward: 70 }
+            ],
+            'part-time': [
+                { id: 'T20231025005', icon: 'fa-comments', name: '在线客服', total: 50, claimed: 30, reward: 18 },
+                { id: 'T20231025018', icon: 'fa-utensils', name: '餐厅服务员', total: 30, claimed: 20, reward: 100 },
+                { id: 'T20231025011', icon: 'fa-store', name: '门店促销', total: 40, claimed: 25, reward: 120 },
+                { id: 'T20231025012', icon: 'fa-clipboard-list', name: '问卷调查', total: 150, claimed: 110, reward: 15 }
+            ]
+        };
+
+        // 当前显示的任务分类和数量
+        let currentCategory = 'all';
+        let displayedTasks = 6;
+        let isLoading = false;
+        let carouselInterval = null;
+        let isSearching = false;
+        let searchTerm = '';
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化轮播图
+            initCarousel();
+            
+            // 初始化任务列表
+            renderTasks();
+            
+            // 选项卡切换功能
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有active类
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // 添加active类到当前选项卡
+                    tab.classList.add('active');
+                    currentCategory = tab.getAttribute('data-target');
+                    displayedTasks = 6;
+                    isSearching = false;
+                    document.getElementById('searchResults').style.display = 'none';
+                    document.getElementById('searchInput').value = '';
+                    renderTasks();
+                });
+            });
+            
+            // 监听滚动事件，实现滚动加载
+            const tasksContainer = document.getElementById('tasksScrollContainer');
+            let scrollTimeout = null;
+            
+            tasksContainer.addEventListener('scroll', function() {
+                // 使用防抖优化性能
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    // 检查是否滚动到底部
+                    if (tasksContainer.scrollTop + tasksContainer.clientHeight >= tasksContainer.scrollHeight - 50) {
+                        loadMoreTasks();
+                    }
+                }, 200); // 增加防抖时间
+            });
+            
+            // 添加任务项点击事件 - 修改为跳转到任务详情页面
+            document.addEventListener('click', function(e) {
+                const taskItem = e.target.closest('.task-item');
+                if (taskItem) {
+                    const taskId = taskItem.getAttribute('data-task-id');
+                    window.location.href = `doer-client-tasks-submit.html?taskId=${taskId}`;
+                }
+            });
+
+            // 搜索功能
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            // 点击搜索按钮
+            searchBtn.addEventListener('click', performSearch);
+            
+            // 输入框回车搜索
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // 输入框输入时实时搜索（添加防抖）
+            let searchTimeout = null;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (this.value.length > 2 || this.value.length === 0) {
+                        performSearch();
+                    }
+                }, 500);
+            });
+        });
+
+        // 执行搜索
+        function performSearch() {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            searchTerm = searchValue;
+            
+            if (searchValue) {
+                isSearching = true;
+                document.getElementById('searchResults').style.display = 'block';
+                document.getElementById('searchResults').textContent = `搜索"${searchValue}"的结果`;
+                displayedTasks = 6;
+                renderTasks();
+            } else {
+                isSearching = false;
+                document.getElementById('searchResults').style.display = 'none';
+                displayedTasks = 6;
+                renderTasks();
+            }
+        }
+
+        // 初始化轮播图
+        function initCarousel() {
+            const carousel = document.querySelector('.carousel-inner');
+            const indicators = document.querySelectorAll('.indicator');
+            let currentIndex = 0;
+            
+            // 清除现有定时器
+            if (carouselInterval) clearInterval(carouselInterval);
+            
+            // 自动轮播
+            carouselInterval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % 3;
+                updateCarousel(currentIndex);
+            }, 4000);
+            
+            // 点击指示器切换
+            indicators.forEach(indicator => {
+                indicator.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    currentIndex = index;
+                    updateCarousel(currentIndex);
+                    
+                    // 重置自动轮播定时器
+                    clearInterval(carouselInterval);
+                    carouselInterval = setInterval(() => {
+                        currentIndex = (currentIndex + 1) % 3;
+                        updateCarousel(currentIndex);
+                    }, 4000);
+                });
+            });
+            
+            // 鼠标悬停时暂停轮播
+            const carouselContainer = document.querySelector('.carousel');
+            carouselContainer.addEventListener('mouseenter', () => {
+                if (carouselInterval) clearInterval(carouselInterval);
+            });
+            
+            carouselContainer.addEventListener('mouseleave', () => {
+                carouselInterval = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % 3;
+                    updateCarousel(currentIndex);
+                }, 4000);
+            });
+            
+            function updateCarousel(index) {
+                carousel.style.transform = `translateX(-${index * 100}%)`;
+                indicators.forEach((ind, i) => {
+                    ind.classList.toggle('active', i === index);
+                });
+            }
+        }
+
+        // 渲染任务列表
+        function renderTasks() {
+            let taskList = document.getElementById(currentCategory);
+            if (!taskList) return;
+            
+            // 隐藏所有任务列表
+            document.querySelectorAll('.task-list').forEach(list => {
+                list.classList.remove('active');
+            });
+            
+            // 显示当前任务列表
+            taskList.classList.add('active');
+            
+            // 清空当前任务列表
+            taskList.innerHTML = '';
+            
+            // 获取当前分类的任务
+            let categoryTasks = tasks[currentCategory] || tasks.all;
+            
+            // 如果正在搜索，过滤任务
+            if (isSearching && searchTerm) {
+                categoryTasks = categoryTasks.filter(task => 
+                    task.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            // 如果没有任务，显示空状态
+            if (categoryTasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <p>${isSearching ? '没有找到相关任务，试试其他关键词' : '暂无任务，去看看其他分类吧'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 添加任务项
+            for (let i = 0; i < Math.min(displayedTasks, categoryTasks.length); i++) {
+                const task = categoryTasks[i];
+                const remaining = task.total - task.claimed;
+                
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                taskItem.setAttribute('data-task-id', task.id);
+                taskItem.innerHTML = `
+                    <div class="task-icon">
+                        <i class="fas ${task.icon}"></i>
+                    </div>
+                    <div class="task-details">
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-stats">
+                            <span class="task-stat"><i class="fas fa-bars"></i>总量: ${task.total}</span>
+                            <span class="task-stat claimed"><i class="fas fa-user-check"></i>已领: ${task.claimed}</span>
+                            <span class="task-stat"><i class="fas fa-clock"></i>剩余: ${remaining}</span>
+                        </div>
+                    </div>
+                    <div class="task-reward-container">
+                        <div class="task-reward">¥${task.reward}/单</div>
+                        <div class="task-fee">（信息费15%）</div>
+                    </div>
+                `;
+                
+                // 添加懒加载占位符
+                taskItem.setAttribute('data-loaded', 'false');
+                
+                taskList.appendChild(taskItem);
+            }
+            
+            // 显示或隐藏"加载更多"提示
+            const loadMoreHint = document.getElementById('loadMoreHint');
+            if (displayedTasks >= categoryTasks.length) {
+                loadMoreHint.style.display = 'none';
+            } else {
+                loadMoreHint.style.display = 'block';
+            }
+            
+            // 实现懒加载
+            implementLazyLoading();
+        }
+
+        // 实现懒加载
+        function implementLazyLoading() {
+            const taskItems = document.querySelectorAll('.task-item');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const taskItem = entry.target;
+                        taskItem.setAttribute('data-loaded', 'true');
+                        observer.unobserve(taskItem);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            taskItems.forEach(item => {
+                if (item.getAttribute('data-loaded') === 'false') {
+                    observer.observe(item);
+                }
+            });
+        }
+
+        // 加载更多任务
+        function loadMoreTasks() {
+            if (isLoading) return;
+            
+            const categoryTasks = tasks[currentCategory] || tasks.all;
+            if (displayedTasks >= categoryTasks.length) return;
+            
+            isLoading = true;
+            const loader = document.getElementById('loader');
+            const loadMoreHint = document.getElementById('loadMoreHint');
+            
+            // 显示加载动画，隐藏加载更多提示
+            loader.style.display = 'block';
+            loadMoreHint.style.display = 'none';
+            
+            // 模拟网络请求延迟
+            setTimeout(() => {
+                displayedTasks += 4;
+                renderTasks();
+                
+                // 隐藏加载动画
+                loader.style.display = 'none';
+                isLoading = false;
+            }, 800);
+        }
+    </script>
+</body>
+</html>

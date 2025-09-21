@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">index
+    <title>投诉反馈 - 轻松工作</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        // 设置根字体大小，用于rem适配
+        (function() {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            function recalc() {
+                var clientWidth = document.documentElement.clientWidth;
+                if (!clientWidth) return;
+                // 以375px设计稿为基准，设置1rem=18px
+                document.documentElement.style.fontSize = 18 * (clientWidth / 375) + 'px';
+            }
+            if (!document.addEventListener) return;
+            window.addEventListener(resizeEvt, recalc, false);
+            document.addEventListener('DOMContentLoaded', recalc, false);
+        })();
+    </script>
+    <style>
+        :root {
+            --primary-color: #ff7e00;
+            --primary-dark: #ff5f00;
+            --background-light: #f8f9fa;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #999;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --card-radius: 0.6rem;
+            --button-radius: 0.6rem;
+            --base-spacing: 0.8rem;
+            --card-shadow: 0 0.1rem 0.4rem rgba(0, 0, 0, 0.04);
+            --button-shadow: 0 0.15rem 0.6rem rgba(255, 126, 0, 0.25);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            height: 100%;
+            font-size: initial;
+        }
+        
+        body {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            padding-bottom: 5rem;
+        }
+        
+        /* 顶部区域 - 与profile.html保持一致 */
+        .profile-header {
+            padding: 1.2rem var(--base-spacing) 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-bottom-left-radius: var(--card-radius);
+            border-bottom-right-radius: var(--card-radius);
+            box-shadow: var(--button-shadow);
+            position: relative;
+        }
+        
+        .profile-top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            justify-content: space-between;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+        
+        /* 表单区域 */
+        .form-container {
+            padding: var(--base-spacing);
+            flex: 1;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: var(--base-spacing);
+            box-shadow: var(--card-shadow);
+            margin-bottom: var(--base-spacing);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 0.05rem solid #e0e0e0;
+            border-radius: var(--card-radius);
+            font-size: 0.75rem;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        
+        .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .form-textarea {
+            min-height: 8rem;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--button-radius);
+            padding: 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--button-shadow);
+        }
+        
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-0.1rem);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .char-count {
+            text-align: right;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.65rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        
+        /* 底部导航 - 与profile.html保持一致 */
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            box-shadow: 0 -0.08rem 0.6rem rgba(0, 0, 0, 0.03);
+            z-index: 1000;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            transition: all 0.2s ease;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--button-radius);
+            border: 0.08rem solid transparent;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            border-color: #ffecd1;
+            transform: translateY(-0.1rem);
+        }
+        
+        .nav-item i {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+        
+        /* 成功提示 */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .success-icon {
+            font-size: 2.5rem;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+        }
+        
+        .success-text {
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* 媒体查询适配不同尺⼨设备 */
+        @media (max-width: 320px) {
+            .form-card {
+                padding: 0.7rem;
+            }
+            
+            .form-select, .form-textarea {
+                padding: 0.6rem;
+            }
+        }
+        
+        @media (min-width: 500px) {
+            .form-container {
+                max-width: 28rem;
+                margin: 0 auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部区域 -->
+    <div class="profile-header">
+        <div class="profile-top">
+            <button class="back-btn" id="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="page-title">投诉反馈</div>
+            <div style="width: 1.5rem;"></div> <!-- 占位元素，保持标题居中 -->
+        </div>
+    </div>
+    
+    <!-- 表单区域 -->
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-group">
+                <label class="form-label" for="reason">反馈原因</label>
+                <select class="form-select" id="reason">
+                    <option value="" disabled selected>请选择反馈原因</option>
+                    <option value="task_issue">任务相关问题</option>
+                    <option value="payment_issue">支付/提现问题</option>
+                    <option value="account_issue">账户问题</option>
+                    <option value="technical_issue">技术问题</option>
+                    <option value="suggestion">功能建议</option>
+                    <option value="other">其他问题</option>
+                </select>
+                <div class="error-message" id="reason-error">请选择反馈原因</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="content">反馈内容</label>
+                <textarea class="form-textarea" id="content" placeholder="请详细描述您的问题或建议..."></textarea>
+                <div class="char-count"><span id="char-count">0</span>/500</div>
+                <div class="error-message" id="content-error">请输入反馈内容</div>
+            </div>
+            
+            <button class="submit-btn" id="submit-btn" disabled>提交反馈</button>
+        </div>
+        
+        <!-- 提交成功提示 -->
+        <div class="success-message" id="success-message">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="success-text">反馈提交成功！我们会尽快处理您的问题。</div>
+            <button class="submit-btn" id="back-home-btn">返回首页</button>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+     <div class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="doer-client-tasks-list.html" class="nav-item">
+            <i class="fas fa-th-large"></i>
+            <span>任务</span>
+        </a>
+        <a href="doer-client-messages-list.html" class="nav-item">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </a>
+        <a href="doer-client-profile-index.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reasonSelect = document.getElementById('reason');
+            const contentTextarea = document.getElementById('content');
+            const charCount = document.getElementById('char-count');
+            const submitBtn = document.getElementById('submit-btn');
+            const reasonError = document.getElementById('reason-error');
+            const contentError = document.getElementById('content-error');
+            const successMessage = document.getElementById('success-message');
+            const backBtn = document.getElementById('back-btn');
+            const backHomeBtn = document.getElementById('back-home-btn');
+            
+            // 字符计数
+            contentTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = length;
+                
+                if (length > 500) {
+                    this.value = this.value.substring(0, 500);
+                    charCount.textContent = 500;
+                }
+                
+                validateForm();
+            });
+            
+            // 原因选择变化
+            reasonSelect.addEventListener('change', validateForm);
+            
+            // 表单验证
+            function validateForm() {
+                let isValid = true;
+                
+                // 验证原因
+                if (!reasonSelect.value) {
+                    reasonError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    reasonError.style.display = 'none';
+                }
+                
+                // 验证内容
+                if (!contentTextarea.value.trim()) {
+                    contentError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    contentError.style.display = 'none';
+                }
+                
+                // 启用/禁用提交按钮
+                submitBtn.disabled = !isValid;
+                
+                return isValid;
+            }
+            
+            // 提交表单
+            submitBtn.addEventListener('click', function() {
+                if (validateForm()) {
+                    // 模拟提交过程
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '提交中...';
+                    
+                    // 模拟网络请求延迟
+                    setTimeout(function() {
+                        // 显示成功消息
+                        document.querySelector('.form-card').style.display = 'none';
+                        successMessage.style.display = 'block';
+                    }, 1000);
+                }
+            });
+            
+            // 返回按钮
+            backBtn.addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            // 返回首页按钮
+            backHomeBtn.addEventListener('click', function() {
+                window.location.href = 'home.html';
+            });
+        });
+    </script>
+</body>
+</html>
